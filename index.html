@@ -28,6 +28,7 @@
   };
   const app = initializeApp(firebaseConfig);
 
+  // نعرّض كل شي يحتاجه السكربت الرئيسي (غير module) عبر window
   window.fbAuth = getAuth(app);
   window.fbDb = getFirestore(app);
   window.fbProviders = {
@@ -113,8 +114,19 @@
   .section-head .seeall{font-size:11.5px; color:var(--accent); cursor:pointer;}
 
   .rowscroll{display:flex; gap:12px; overflow-x:auto; padding-bottom:4px; margin:0 -16px; padding-inline:16px; scroll-snap-type:x proximity;}
-  .card{flex:0 0 128px; border-radius:14px; overflow:hidden; position:relative; border:1px solid var(--line); background:var(--card); scroll-snap-align:start; cursor:pointer;}
+  .card{flex:0 0 128px; border-radius:14px; overflow:hidden; position:relative; border:1px solid var(--line); background:var(--card); scroll-snap-align:start; cursor:pointer; transition:transform .15s ease;}
   .card:active{transform:scale(.97);}
+  @keyframes fadeInUp{from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:translateY(0);}}
+  .card, .chat-msg, .sub-card, .upcoming-item, .fav-item-card, .team-card, .reader-page, .reader-para, .grid-cards>*{
+    animation:fadeInUp .38s cubic-bezier(.22,.9,.32,1) both;
+  }
+  .icon-btn{transition:transform .15s ease, background .15s ease;}
+  .btn{transition:transform .15s ease, opacity .15s ease;}
+  .btn:active{transform:scale(.96);}
+  .follow-btn{transition:transform .15s ease, background .2s ease, color .2s ease;}
+  .follow-btn:active{transform:scale(.94);}
+  .q-tag, .g-tab, .search-chip{transition:background .18s ease, color .18s ease, transform .15s ease;}
+  .q-tag:active, .g-tab:active, .search-chip:active{transform:scale(.95);}
   .thumb{aspect-ratio:2/3; position:relative; display:flex; align-items:center; justify-content:center; background:linear-gradient(160deg, rgba(var(--accent-rgb),.10), var(--card2) 75%);}
   .poster-icon{width:46px; height:46px; border-radius:14px; background:rgba(var(--accent-rgb),.12); border:1px solid rgba(var(--accent-rgb),.3); display:flex; align-items:center; justify-content:center;}
   .poster-icon svg{width:21px;height:21px;stroke:var(--accent);fill:none;stroke-width:1.6;}
@@ -216,7 +228,272 @@
   .watch-btn svg{width:15px;height:15px;fill:var(--on-accent);stroke:none;}
   .anime-desc-box{background:var(--card); border:1px solid var(--line); border-radius:14px; padding:14px; font-size:11.5px; color:var(--text-dim); line-height:1.7; margin-bottom:16px;}
   .anime-info-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:16px;}
-  .info-cell{background:var
+  .info-cell{background:var(--card); padding:10px 12px; border-radius:10px; border:1px solid var(--line);}
+  .info-cell .label{font-size:9.5px; color:var(--text-dim); margin-bottom:2px;}
+  .info-cell .val{font-size:11.5px; font-weight:700; color:var(--text);}
+  .episodes-grid{display:grid; grid-template-columns:repeat(auto-fill, minmax(80px, 1fr)); gap:8px; padding-right:2px;}
+  .ep-btn{background:var(--card); border:1px solid var(--line); padding:10px 6px; border-radius:12px; text-align:center; font-size:11px; color:var(--text); cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:4px;}
+  .ep-btn svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:1.8;}
+  .ep-btn.watched{background:var(--accent); color:var(--on-accent); font-weight:700; border-color:var(--accent);}
+  .ep-btn.watched svg{fill:var(--on-accent);stroke:none;}
+  .my-rate-inline{display:flex; align-items:center; gap:10px; background:var(--card); border:1px solid var(--line); border-radius:14px; padding:12px 14px; margin-bottom:16px;}
+  .my-rate-inline .lbl{font-size:11px; color:var(--text-dim); flex-shrink:0;}
+  .star-pick{font-size:20px; color:var(--line-strong); cursor:pointer;}
+  .star-pick.on{color:var(--star);}
+
+  .comments-inline{border:1px solid var(--line); background:var(--card); border-radius:14px; padding:14px; margin-top:12px;}
+  .comments-inline .ttl{font-size:12.5px; font-weight:700; color:var(--text); margin-bottom:12px; display:flex; align-items:center; gap:6px;}
+  .comments-inline .ttl svg{width:15px;height:15px;stroke:var(--accent);fill:none;stroke-width:1.7;}
+  .chat-box{display:flex; flex-direction:column; gap:10px; margin-bottom:12px;}
+  .chat-msg{background:var(--card); border:1px solid var(--line); border-radius:12px; padding:10px; position:relative;}
+  .chat-user{font-size:10.5px; font-weight:700; color:var(--accent-soft); margin-bottom:2px; display:flex; justify-content:space-between; align-items:center; gap:8px;}
+  .chat-user .cu-name{overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+  .chat-user .cu-meta{display:flex; align-items:center; gap:8px; flex-shrink:0; font-weight:400; color:var(--text-dim);}
+  .chat-text{font-size:11.5px; color:var(--text); line-height:1.6;}
+  .chat-report{font-size:9.5px; color:var(--text-dim); cursor:pointer; display:flex; align-items:center; gap:3px; padding:2px 4px; border-radius:6px;}
+  .chat-report:hover{color:var(--accent-soft); background:rgba(var(--accent-rgb),.12);}
+  .chat-report svg{width:10px;height:10px;}
+  .chat-avatar{width:20px; height:20px; border-radius:7px; object-fit:cover; flex-shrink:0;}
+  .chat-avatar.ph{display:flex; align-items:center; justify-content:center; color:#fff; font-size:10px; font-weight:800;}
+  .ttl-row{display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;}
+  .ttl-row .ttl{margin-bottom:0;}
+  @keyframes skelPulse{0%,100%{opacity:.5;} 50%{opacity:1;}}
+  .chat-skel{height:52px; border-radius:12px; background:var(--card2); margin-bottom:8px; animation:skelPulse 1.3s ease-in-out infinite;}
+  .chat-input-row{display:flex; gap:8px; align-items:center;}
+  .chat-send{width:40px; height:40px; border-radius:12px; background:var(--accent); color:var(--on-accent); border:none; flex-shrink:0; cursor:pointer; display:flex; align-items:center; justify-content:center;}
+  .chat-send svg{width:16px;height:16px;fill:var(--on-accent);stroke:none;}
+
+  .acc-cover{height:150px; border-radius:16px; background:linear-gradient(120deg, rgba(var(--accent-rgb),.25), var(--card2) 70%); position:relative; margin-bottom:44px; border:1px solid var(--line);}
+  .acc-avatar-wrap{position:absolute; bottom:-34px; left:50%; transform:translateX(-50%); width:76px; height:76px; border-radius:50%; background:var(--card); border:4px solid var(--bg-alt); display:flex; align-items:center; justify-content:center; overflow:hidden; cursor:pointer;}
+  .acc-avatar-wrap svg{width:28px;height:28px;stroke:var(--accent);fill:none;stroke-width:1.6;}
+  .acc-avatar-wrap img{width:100%; height:100%; object-fit:cover; display:none;}
+  .acc-avatar-wrap .avatar-edit-mark{position:absolute; inset:0; background:rgba(0,0,0,.45); display:flex; align-items:center; justify-content:center; opacity:0; transition:opacity .15s;}
+  .acc-avatar-wrap:hover .avatar-edit-mark{opacity:1;}
+  .acc-avatar-wrap .avatar-edit-mark svg{width:16px;height:16px;stroke:#fff;}
+  .acc-lvl-badge{position:absolute; top:10px; left:10px; background:rgba(0,0,0,.5); backdrop-filter:blur(4px); border:1px solid rgba(255,255,255,.15); border-radius:10px; padding:5px 10px; text-align:center;}
+  .acc-lvl-badge .n{font-size:12px; font-weight:900; color:var(--star);}
+  .acc-lvl-badge .l{font-size:7.5px; color:#fff; opacity:.8;}
+  .acc-name-block{text-align:center; padding-top:6px; margin-bottom:16px;}
+  .acc-name-block .nm{font-size:17px; font-weight:900; color:var(--text);}
+  .acc-name-block .rl{font-size:10.5px; color:var(--accent-soft); font-weight:700; margin-top:2px;}
+  .acc-name-block .since{font-size:9.5px; color:var(--text-dim); margin-top:3px;}
+  .acc-level-bar{background:var(--card); border:1px solid var(--line); border-radius:12px; padding:12px 14px; margin-bottom:16px;}
+  .acc-level-bar .row{display:flex; justify-content:space-between; font-size:10.5px; color:var(--text-dim); margin-bottom:6px;}
+  .acc-tabs{display:flex; gap:8px; margin-bottom:16px;}
+  .acc-tab{flex:1; text-align:center; padding:9px; border-radius:11px; font-size:11.5px; font-weight:700; background:var(--card); border:1px solid var(--line); color:var(--text-dim); cursor:pointer;}
+  .acc-tab.active{background:var(--accent); color:var(--on-accent); border-color:var(--accent);}
+  .acc-panel{visibility:hidden; height:0; overflow:hidden; opacity:0; transform:translateY(6px); transition:opacity .22s ease, transform .22s ease, visibility 0s linear .22s;}
+  .acc-panel.active{visibility:visible; height:auto; overflow:visible; opacity:1; transform:translateY(0); transition:opacity .22s ease, transform .22s ease;}
+  .account-stats{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:16px;}
+  .stat-cell2{background:var(--card); border:1px solid var(--line); border-radius:14px; padding:14px; text-align:center;}
+  .stat-cell2 svg{width:18px;height:18px;stroke:var(--accent);fill:none;stroke-width:1.6;margin-bottom:6px;}
+  .stat-cell2 .num{font-size:19px; font-weight:900; color:var(--text);}
+  .stat-cell2 .lbl{font-size:9.5px; color:var(--text-dim); margin-top:3px;}
+  .badges-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-bottom:16px;}
+  .badge-cell{text-align:center; background:var(--card); border:1px solid var(--line); border-radius:12px; padding:12px 4px;}
+  .badge-cell.locked{opacity:.3;}
+  .badge-cell svg{width:19px;height:19px;stroke:var(--star);fill:none;stroke-width:1.5;margin-bottom:5px;}
+  .badge-cell .lbl{font-size:8px; color:var(--text-dim);}
+
+  .empty-state{text-align:center; padding:40px 10px; color:var(--text-dim);}
+  .empty-state svg{width:34px;height:34px;stroke:var(--text-dim);fill:none;stroke-width:1.4;margin-bottom:10px;}
+  .empty-state .txt{font-size:12px;}
+
+  .bottom-nav{position:fixed; bottom:14px; left:50%; transform:translateX(-50%); width:calc(100% - 32px); max-width:448px; background:rgba(var(--card-rgb),.95); backdrop-filter:blur(16px); border:1px solid var(--line-strong); border-radius:20px; display:flex; justify-content:space-around; padding:9px 6px; box-shadow:0 14px 34px rgba(0,0,0,.35); z-index:60;}
+  .nav-btn{background:none; border:none; display:flex; flex-direction:column; align-items:center; gap:3px; color:var(--text-dim); font-size:9px; cursor:pointer; padding:6px 12px; border-radius:13px;}
+  .nav-btn svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.7;}
+  .nav-btn.active{color:var(--accent); background:rgba(var(--accent-rgb),.14);}
+
+  .switch-row{display:flex; justify-content:space-between; align-items:center; padding:12px 14px; background:var(--card); border:1px solid var(--line); border-radius:12px; margin-bottom:8px;}
+  .switch-row .lbl{font-size:12px; color:var(--text);}
+  .switch-row .sub{font-size:9.5px; color:var(--text-dim); margin-top:2px;}
+  .switch{position:relative; width:40px; height:23px; flex-shrink:0;}
+  .switch input{opacity:0; width:0; height:0;}
+  .slider-tg{position:absolute; cursor:pointer; inset:0; background:var(--line-strong); border-radius:24px; transition:.2s;}
+  .slider-tg:before{content:''; position:absolute; height:17px; width:17px; right:3px; bottom:3px; background:#fff; border-radius:50%; transition:.2s;}
+  input:checked + .slider-tg{background:var(--accent);}
+  input:checked + .slider-tg:before{transform:translateX(17px);}
+
+  .theme-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:10px; margin-bottom:6px;}
+  .theme-card{border-radius:14px; padding:12px; cursor:pointer; border:2px solid var(--line); position:relative; overflow:hidden;}
+  .theme-card.active{border-color:var(--accent);}
+  .theme-swatch{display:flex; gap:5px; margin-bottom:8px;}
+  .theme-swatch i{width:16px;height:16px;border-radius:5px;display:block;}
+  .theme-card .tn{font-size:11px; font-weight:700;}
+  .theme-check{position:absolute; top:8px; left:8px; width:18px; height:18px; border-radius:50%; background:var(--accent); display:none; align-items:center; justify-content:center;}
+  .theme-card.active .theme-check{display:flex;}
+  .theme-check svg{width:10px;height:10px;stroke:var(--on-accent);fill:none;stroke-width:3;}
+
+  .player-screen{background:var(--card2); border-radius:16px; aspect-ratio:16/9; display:flex; align-items:center; justify-content:center; position:relative; margin-bottom:14px; border:1px solid var(--line); overflow:hidden;}
+  .player-screen svg.bgic{width:60px;height:60px;stroke:var(--line-strong);fill:none;stroke-width:1.2;}
+  .play-fab{position:absolute; width:56px; height:56px; border-radius:50%; background:rgba(0,0,0,.4); backdrop-filter:blur(6px); border:1.5px solid rgba(255,255,255,.35); display:flex; align-items:center; justify-content:center; cursor:pointer;}
+  .play-fab svg{width:21px;height:21px;fill:#fff;stroke:none;}
+  .player-time-row{display:flex; justify-content:space-between; font-size:10px; color:var(--text-dim); margin-top:6px;}
+  .player-controls{display:flex; align-items:center; justify-content:center; gap:24px; margin:14px 0;}
+  .player-controls span{cursor:pointer; width:38px;height:38px;border-radius:12px;background:var(--card);color:var(--text);display:flex;align-items:center;justify-content:center;}
+  .player-controls svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.8;}
+  .player-controls .mid{background:var(--accent); color:var(--on-accent);}
+  .player-controls .mid svg{width:19px;height:19px;fill:var(--on-accent);stroke:none;}
+  .quality-row{display:flex; gap:8px; margin-bottom:16px;}
+  .quality-chip{padding:6px 12px; border-radius:10px; font-size:11px; background:var(--card); border:1px solid var(--line); color:var(--text-dim); cursor:pointer;}
+  .quality-chip.active{background:var(--accent); color:var(--on-accent); border-color:var(--accent); font-weight:700;}
+
+  .share-sheet{background:var(--bg-alt); border:1px solid var(--line-strong); border-radius:18px 18px 0 0; padding:16px;}
+  .share-icons{display:flex; justify-content:space-around; margin:14px 0;}
+  .share-ic{display:flex; flex-direction:column; align-items:center; gap:6px; font-size:10px; color:var(--text-dim); cursor:pointer;}
+  .share-ic .circ{width:42px; height:42px; border-radius:13px; background:var(--card); border:1px solid var(--line); display:flex; align-items:center; justify-content:center;}
+  .share-ic svg{width:17px;height:17px;stroke:var(--text);fill:none;stroke-width:1.6;}
+  .copy-row{display:flex; gap:8px; align-items:center; background:var(--card); border:1px solid var(--line); border-radius:12px; padding:8px 10px;}
+  .copy-row span{flex:1; font-size:11px; color:var(--text-dim); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+  .copy-btn{background:var(--accent); color:var(--on-accent); border:none; border-radius:8px; padding:7px 14px; font-size:11px; font-weight:700; cursor:pointer;}
+
+  .team-card{display:flex; align-items:center; gap:12px; background:var(--card); border:1px solid var(--line); border-radius:14px; padding:12px; margin-bottom:10px;}
+  .team-ic{width:44px; height:44px; border-radius:12px; background:var(--card2); border:1px solid var(--line-strong); display:flex; align-items:center; justify-content:center; flex-shrink:0;}
+  .team-ic svg{width:19px;height:19px;stroke:var(--accent);fill:none;stroke-width:1.5;}
+  .team-info{flex:1;}
+  .team-name{font-size:12.5px; font-weight:700; color:var(--text);}
+  .team-sub{font-size:10px; color:var(--text-dim); margin-top:2px;}
+  .follow-btn{padding:7px 13px; border-radius:10px; font-size:10.5px; font-weight:700; background:var(--card2); border:1px solid var(--line); color:var(--text); cursor:pointer;}
+  .follow-btn.on{background:var(--accent); color:var(--on-accent); border-color:var(--accent);}
+
+  .upcoming-item{display:flex; align-items:center; gap:12px; background:var(--card); border:1px solid var(--line); border-radius:14px; padding:12px; margin-bottom:10px; cursor:pointer;}
+  .upcoming-ic{width:44px; height:44px; border-radius:12px; background:var(--card2); border:1px solid var(--line-strong); display:flex; align-items:center; justify-content:center; flex-shrink:0;}
+  .upcoming-ic svg{width:19px;height:19px;stroke:var(--accent);fill:none;stroke-width:1.5;}
+  .upcoming-info{flex:1;}
+  .upcoming-info .t{font-size:12.5px; font-weight:700; color:var(--text);}
+  .upcoming-info .s{font-size:10px; color:var(--text-dim); margin-top:2px;}
+  .upcoming-count{font-size:12px; font-weight:900; color:var(--secondary); background:rgba(var(--secondary-rgb),.1); border:1px solid rgba(var(--secondary-rgb),.35); border-radius:10px; padding:6px 10px; text-align:center; min-width:64px;}
+
+  .search-chip-row{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px;}
+  .search-chip{padding:7px 13px; border-radius:11px; font-size:11px; background:var(--card); border:1px solid var(--line); color:var(--text-dim); cursor:pointer;}
+  .search-chip.active{background:var(--accent); color:var(--on-accent); border-color:var(--accent);}
+  .search-tabs-row{display:flex; gap:8px; margin-bottom:12px;}
+  .search-sort{margin-bottom:14px;}
+  .preset-card{border-radius:14px; padding:12px; cursor:pointer; border:2px solid var(--line); position:relative; overflow:hidden;}
+  .preset-swatch{height:38px; border-radius:9px; margin-bottom:8px;}
+  .preset-card .pn{font-size:10.5px; font-weight:700; color:var(--text);}
+  .auth-tabs{display:flex; gap:8px; margin-bottom:16px;}
+  .auth-tab{flex:1; text-align:center; padding:10px; border-radius:12px; font-size:12px; font-weight:700; background:var(--card); border:1px solid var(--line); color:var(--text-dim); cursor:pointer;}
+  .auth-tab.active{background:var(--accent); color:var(--on-accent); border-color:var(--accent);}
+  .auth-msg{font-size:11.5px; padding:10px 12px; border-radius:10px; margin-bottom:12px; display:none;}
+  .auth-msg.err{background:rgba(239,81,100,.12); border:1px solid rgba(239,81,100,.4); color:var(--heart); display:block;}
+  .auth-msg.ok{background:rgba(var(--secondary-rgb),.12); border:1px solid rgba(var(--secondary-rgb),.4); color:var(--secondary); display:block;}
+
+  /* ===== layout styles (structural, not color) ===== */
+  .layout-card{border-radius:14px; padding:12px; cursor:pointer; border:2px solid var(--line); background:var(--card);}
+  .layout-card.active{border-color:var(--accent);}
+  .layout-card .ln{font-size:11px; font-weight:700; margin-top:8px;}
+  .layout-preview{height:44px; border-radius:8px; background:var(--card2); display:flex; align-items:center; gap:4px; padding:6px; overflow:hidden;}
+  .layout-preview i{background:var(--accent); border-radius:3px; flex-shrink:0;}
+  .lp-grid i{width:14px;height:32px;}
+  .lp-list i{width:100%;height:9px;}
+  .lp-list{flex-direction:column; justify-content:center; gap:4px;}
+  .lp-cards i{width:44px;height:32px;}
+
+  /* List layout: minimal compact header + single static hero, no carousel + vertical rows */
+  body.layout-list .hero-slide:not(:first-child){display:none;}
+  body.layout-list .hero-dots{display:none;}
+  body.layout-list .hero-carousel{border-radius:12px;}
+  body.layout-list .hero-slide{min-height:150px;}
+  body.layout-list .hero-content{padding:14px 16px 16px;}
+  body.layout-list .hero-slide h1{font-size:17px;}
+  body.layout-list .hero-slide p{display:none;}
+  body.layout-list .quick-filters{display:none;}
+  body.layout-list .topbar{padding-bottom:8px;}
+  body.layout-list .section-head h2{font-size:13.5px; text-transform:uppercase; letter-spacing:.5px; color:var(--text-dim);}
+  body.layout-list .genre-tabs{margin-top:12px;}
+  body.layout-list .rowscroll{flex-direction:column; overflow-x:visible; margin:0; padding-inline:0;}
+  body.layout-list .card{flex-direction:row; flex:none; width:100%; display:flex; height:96px;}
+  body.layout-list .card .thumb{width:96px; aspect-ratio:auto; height:96px; flex-shrink:0;}
+  body.layout-list .card .card-info{flex:1; display:flex; flex-direction:column; justify-content:center; padding:10px 12px;}
+  body.layout-list .card .card-info .t{font-size:13px; white-space:normal;}
+  body.layout-list .poster-icon{width:38px;height:38px;}
+
+  /* Cards layout: bold poster-magazine feel — taller hero, big pills, 2-col grid */
+  body.layout-cards .hero-slide{min-height:280px;}
+  body.layout-cards .hero-slide h1{font-size:27px;}
+  body.layout-cards .genre-tabs .g-tab{padding:10px 20px; font-size:13px; font-weight:700;}
+  body.layout-cards .section-head h2{font-size:19px; font-weight:900;}
+  body.layout-cards .rowscroll{display:grid; grid-template-columns:1fr 1fr; overflow-x:visible; margin:0; padding-inline:0;}
+  body.layout-cards .card{flex:none; width:100%; border-radius:18px;}
+  body.layout-cards .thumb{aspect-ratio:16/10;}
+  body.layout-cards .poster-icon{width:56px;height:56px; border-radius:18px;}
+  body.layout-cards .card-info{padding:12px;}
+  body.layout-cards .card-info .t{font-size:13px;}
+  .views-badge{position:absolute; bottom:6px; right:6px; z-index:2; background:rgba(0,0,0,.6); color:#fff; font-size:8.5px; font-weight:700; padding:2px 6px; border-radius:7px; display:flex; align-items:center; gap:3px;}
+  .views-badge svg{width:9px;height:9px;stroke:#fff;fill:none;stroke-width:2;}
+  .excl-ribbon{position:absolute; top:0; left:0; z-index:3; background:linear-gradient(90deg, var(--accent), var(--secondary)); color:var(--on-accent); font-size:8px; font-weight:900; padding:3px 9px 3px 7px; border-radius:0 0 10px 0;}
+  .dl-item{display:flex; align-items:center; gap:12px; background:var(--card); border:1px solid var(--line); border-radius:14px; padding:12px; margin-bottom:10px;}
+  .dl-ic{width:44px; height:44px; border-radius:12px; background:var(--card2); border:1px solid var(--line-strong); display:flex; align-items:center; justify-content:center; flex-shrink:0;}
+  .dl-ic svg{width:19px;height:19px;stroke:var(--accent);fill:none;stroke-width:1.5;}
+  .dl-info{flex:1;}
+  .dl-info .t{font-size:12.5px; font-weight:700; color:var(--text);}
+  .dl-info .s{font-size:10px; color:var(--text-dim); margin-top:2px;}
+
+  /* responsive banner — fits any uploaded image size automatically */
+  .acc-cover{overflow:hidden;}
+  .acc-cover img{width:100%; height:100%; object-fit:contain; object-position:center; display:block; background:rgba(0,0,0,.15);}
+  .banner-upload-btn{position:absolute; bottom:8px; left:8px; z-index:2; background:rgba(0,0,0,.55); color:#fff; border:1px solid rgba(255,255,255,.3); border-radius:9px; padding:6px 10px; font-size:10px; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:5px;}
+  .banner-upload-btn svg{width:12px;height:12px;stroke:#fff;fill:none;stroke-width:1.8;}
+
+  /* admin distinguishing */
+  .admin-badge{display:inline-flex; align-items:center; gap:4px; background:linear-gradient(90deg,#ffd76a,#ff9f43); color:#2a1500; font-size:9px; font-weight:900; padding:3px 9px; border-radius:9px; margin-right:6px;}
+  .admin-badge svg{width:10px;height:10px;fill:#2a1500;stroke:none;}
+  .is-admin .acc-avatar-wrap{border-color:#ffd76a; box-shadow:0 0 0 3px rgba(255,215,106,.25);}
+  .is-admin .acc-name-block .nm{background:linear-gradient(90deg,#ffd76a,#ff9f43); -webkit-background-clip:text; background-clip:text; color:transparent;}
+
+  /* admin panel */
+  .admin-tabs{display:flex; gap:8px; overflow-x:auto; margin-bottom:16px;}
+  .admin-tab{padding:8px 14px; border-radius:11px; font-size:11.5px; font-weight:700; white-space:nowrap; background:var(--card); border:1px solid var(--line); color:var(--text-dim); cursor:pointer;}
+  .admin-tab.active{background:var(--accent); color:var(--on-accent); border-color:var(--accent);}
+  .admin-panel2{visibility:hidden; height:0; overflow:hidden; opacity:0; transform:translateY(6px); transition:opacity .22s ease, transform .22s ease, visibility 0s linear .22s;}
+  .admin-panel2.active{visibility:visible; height:auto; overflow:visible; opacity:1; transform:translateY(0); transition:opacity .22s ease, transform .22s ease;}
+  .toggle-row{display:flex; align-items:center; gap:8px; font-size:11.5px; color:var(--text); padding:9px 2px; border-bottom:1px solid var(--line); cursor:pointer;}
+  .toggle-row input{width:16px; height:16px; accent-color:var(--accent); flex-shrink:0;}
+  .lang-toggle{display:flex; background:var(--card2); border:1px solid var(--line); border-radius:9px; overflow:hidden; font-size:10px; font-weight:800;}
+  .lang-toggle span{padding:5px 9px; cursor:pointer; color:var(--text-dim);}
+  .lang-toggle span.active{background:var(--accent); color:var(--on-accent);}
+  .sub-card{background:var(--card); border:1px solid var(--line); border-radius:14px; padding:12px; margin-bottom:10px;}
+  .sub-head{display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;}
+  .sub-title{font-size:12.5px; font-weight:700; color:var(--text);}
+  .sub-meta{font-size:10px; color:var(--text-dim); margin-bottom:8px;}
+  .sub-actions{display:flex; gap:8px;}
+  .sub-btn{flex:1; padding:8px; border-radius:9px; font-size:11px; font-weight:700; border:none; cursor:pointer;}
+  .sub-btn.approve{background:var(--secondary); color:var(--on-accent);}
+  .sub-btn.reject{background:var(--heart); color:#fff;}
+  .sub-btn.ban{background:var(--heart); color:#fff;}
+  .sub-btn.resolve{background:var(--accent); color:var(--on-accent);}
+
+  /* store */
+  .points-strip{display:flex; align-items:center; justify-content:space-between; background:linear-gradient(90deg, rgba(var(--accent-rgb),.15), rgba(var(--secondary-rgb),.1)); border:1px solid var(--line-strong); border-radius:14px; padding:12px 14px; margin-bottom:16px;}
+  .points-strip .pn{font-size:18px; font-weight:900; color:var(--accent);}
+  .points-strip .pl{font-size:10px; color:var(--text-dim);}
+  .store-cats{display:flex; gap:8px; overflow-x:auto; margin-bottom:14px;}
+  .store-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:10px;}
+  .store-item{background:var(--card); border:1px solid var(--line); border-radius:14px; padding:12px; text-align:center;}
+  .store-item .icwrap{width:100%; aspect-ratio:1/1; border-radius:12px; display:flex; align-items:center; justify-content:center; margin-bottom:8px;}
+  .store-item .icwrap svg{width:26px;height:26px;}
+  .store-item .nm{font-size:10.5px; font-weight:700; color:var(--text); margin-bottom:6px; min-height:26px;}
+  .store-item .buy{width:100%; padding:7px; border-radius:9px; font-size:10.5px; font-weight:800; border:none; cursor:pointer; background:var(--accent); color:var(--on-accent);}
+  .store-item .buy.owned{background:var(--secondary);}
+  .store-item .buy.free{background:linear-gradient(90deg,#ffd76a,#ff9f43); color:#2a1500;}
+
+  /* continuous reader */
+  .chap-divider{display:flex; align-items:center; gap:10px; margin:18px 0 12px; color:var(--accent); font-size:11.5px; font-weight:800;}
+  .chap-divider::before, .chap-divider::after{content:''; flex:1; height:1px; background:var(--line-strong);}
+  .reader-page{background:var(--card2); border:1px solid var(--line); border-radius:14px; display:flex; align-items:center; justify-content:center; margin-bottom:8px; aspect-ratio:3/4; max-height:420px;}
+  .reader-page svg{width:52px;height:52px;stroke:var(--line-strong);fill:none;stroke-width:1.2;}
+  .reader-para{font-size:15px; line-height:2.1; color:var(--text); margin-bottom:14px;}
+
+  /* comment like button */
+  .like-btn{position:absolute; left:8px; top:8px; display:flex; align-items:center; gap:4px; cursor:pointer; color:var(--text-dim); font-size:10px;}
+  .like-btn svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.8;}
+  .like-btn.liked{color:var(--heart);}
+  .like-btn.liked svg{fill:var(--heart);stroke:var(--heart);}
+</style>
+</head>
+<body>
+
 <header class="topbar">
   <div class="brand-row">
     <div style="display:flex; gap:8px;">
@@ -248,10 +525,29 @@
     <div class="hero-track" id="heroTrack">
       <div class="hero-slide hs1">
         <div class="hero-bg-glow"></div>
+        <div class="hero-badge">الأكثر مشاهدة</div>
         <div class="hero-content">
-          <h1>أهلاً فيك بموقع بيور</h1>
-          <p>راح تظهر هنا أحدث وأبرز الأعمال أول ما يرفعها فريقنا.</p>
-          <div class="cta-row"><button class="btn btn-ghost" onclick="openDrawer()">تصفح القائمة</button></div>
+          <h1>صاعد المستوى الوحيد<br>الفصل ١١٢ متوفر الآن</h1>
+          <p>اقرأ الفصول الحصرية بأعلى جودة ترجمة من فرق السكانلايشن المميزة.</p>
+          <div class="cta-row"><button class="btn btn-primary" onclick="openAnimeDetails('solo')"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M6 4l14 8-14 8V4z"/></svg>اقرأ الآن</button><button class="btn btn-ghost" onclick="openDrawer()">تصفح القائمة</button></div>
+        </div>
+      </div>
+      <div class="hero-slide hs2">
+        <div class="hero-bg-glow"></div>
+        <div class="hero-badge">إضافة جديدة</div>
+        <div class="hero-content">
+          <h1>القديسة الغافلة<br>فصل جديد كل أسبوع</h1>
+          <p>فتاة تُنقل لعالم آخر دون أن تدرك أنها تحمل قوة القديسة المنتظرة.</p>
+          <div class="cta-row"><button class="btn btn-primary" onclick="openAnimeDetails('qadisa')"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M6 4l14 8-14 8V4z"/></svg>اقرأ الآن</button></div>
+        </div>
+      </div>
+      <div class="hero-slide hs3">
+        <div class="hero-bg-glow"></div>
+        <div class="hero-badge">تصدر التقييمات</div>
+        <div class="hero-content">
+          <h1>عائلة تحت شجرة التوت<br>تقييم ٨٫٣ من القرّاء</h1>
+          <p>عائلة تعيد ترتيب حياتها بعد غياب طويل وسط قرية تخفي أسرارًا قديمة.</p>
+          <div class="cta-row"><button class="btn btn-primary" onclick="scrollToTop()"><svg viewBox="0 0 24 24"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg>الأعلى تقييمًا</button></div>
         </div>
       </div>
     </div>
@@ -303,7 +599,7 @@
 <div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
 <div class="drawer" id="drawer">
   <div class="drawer-header"><span style="font-weight:900; font-size:19px; color:var(--accent);">بيور</span><div class="drawer-close" onclick="closeDrawer()"><svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2"><line x1="5" y1="5" x2="19" y2="19"/><line x1="19" y1="5" x2="5" y2="19"/></svg></div></div>
-  <div class="user-card" onclick="closeDrawer(); currentUser ? openModal('accountModal') : openModal('authModal')"><div class="user-profile-info"><div class="avatar"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/></svg></div><div class="user-details"><div class="u-name" id="drawerUserName">زائر</div><div class="u-role" id="drawerUserRole">اضغط لتسجيل الدخول</div></div></div></div>
+  <div class="user-card" onclick="closeDrawer(); currentUser ? openModal('accountModal') : openModal('authModal')"><div class="user-profile-info"><div class="avatar"><img id="drawerAvatarImg" style="display:none; width:100%; height:100%; object-fit:cover; border-radius:50%;"><svg id="drawerAvatarIcon" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/></svg></div><div class="user-details"><div class="u-name" id="drawerUserName">زائر</div><div class="u-role" id="drawerUserRole">اضغط لتسجيل الدخول</div></div></div></div>
   <div class="drawer-section-title">القائمة الرئيسية</div>
   <div class="drawer-menu">
     <div class="drawer-item active"><span class="left-part"><svg viewBox="0 0 24 24"><path d="M4 11 12 4l8 7"/><path d="M6 10v10h12V10"/></svg>الرئيسية</span></div>
@@ -325,6 +621,7 @@
     <div class="drawer-item" onclick="closeDrawer(); doSignOut()"><span class="left-part"><svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>تسجيل الخروج</span></div>
   </div>
 </div>
+
 <div class="modal-overlay" id="authModalOverlay" onclick="closeModal('authModal')"></div>
 <div class="modal-window" id="authModal">
   <div class="modal-head"><h3>الحساب</h3><div class="modal-close" onclick="closeModal('authModal')"><svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2"><line x1="5" y1="5" x2="19" y2="19"/><line x1="19" y1="5" x2="5" y2="19"/></svg></div></div>
@@ -360,9 +657,11 @@
   <div class="admin-tabs">
     <div class="admin-tab active" data-at="subs" onclick="switchAdminTab('subs')">الطلبات</div>
     <div class="admin-tab" data-at="reports" onclick="switchAdminTab('reports')">البلاغات</div>
-    <div class="admin-tab" data-at="upload" data-needs-level="2" onclick="switchAdminTab('upload')">لوحة الرفع</div>
     <div class="admin-tab" data-at="ban" onclick="switchAdminTab('ban')">حظر / إيقاف</div>
     <div class="admin-tab" data-at="admins" data-needs-level="3" onclick="switchAdminTab('admins')">الإداريين</div>
+    <div class="admin-tab" data-at="pureteam" data-needs-level="3" onclick="switchAdminTab('pureteam')">تيم بيور</div>
+    <div class="admin-tab" data-needs-level="3" data-at="logins" onclick="switchAdminTab('logins')">سجل الدخول</div>
+    <div class="admin-tab" data-needs-level="2" data-at="deletecontent" onclick="switchAdminTab('deletecontent')">حذف محتوى</div>
     <div class="admin-tab" data-at="tools" onclick="switchAdminTab('tools')">أدوات</div>
   </div>
   <div class="admin-panel2 active" data-ap="subs">
@@ -372,39 +671,6 @@
   <div class="admin-panel2" data-ap="reports">
     <div class="drawer-section-title">بلاغات مفتوحة</div>
     <div id="adminReportsList"></div>
-  </div>
-  <div class="admin-panel2" data-ap="upload">
-    <div class="drawer-section-title">إضافة / تعديل عمل</div>
-    <p style="font-size:10px;color:var(--text-dim);margin-bottom:8px;">اكتب مفتاح العمل نفسه حتى تعدّل عمل موجود، أو مفتاح جديد لإنشاء عمل جديد (حروف إنكليزية بدون مسافات، مثلاً: solo-leveling).</p>
-    <div class="form-group"><label>مفتاح العمل (key)</label><input class="form-input" id="upMangaKey" placeholder="مثال: manga-1"></div>
-    <div class="form-group"><label>العنوان</label><input class="form-input" id="upMangaTitle"></div>
-    <div class="form-group"><label>النوع</label>
-      <select class="form-input" id="upMangaType">
-        <option value="manhwa">مانهوا</option><option value="manga">مانجا</option><option value="novel">رواية</option><option value="comic">كومكس</option>
-      </select>
-    </div>
-    <div class="form-group"><label>التصنيف</label><input class="form-input" id="upMangaGenre" placeholder="أكشن · خيال"></div>
-    <div class="form-group"><label>الوصف</label><textarea class="form-input" id="upMangaDesc" rows="3"></textarea></div>
-    <div class="form-group"><label>رابط صورة الغلاف (اختياري)</label><input class="form-input" id="upMangaCover" placeholder="https://..."></div>
-    <label class="toggle-row"><input type="checkbox" id="upMangaExclusive">عمل حصري</label>
-    <button class="watch-btn" onclick="saveManga()">حفظ العمل</button>
-    <div id="upMangaMsg" class="auth-msg"></div>
-
-    <div class="drawer-section-title" style="margin-top:20px;">إضافة فصل</div>
-    <div class="form-group"><label>اختر العمل</label><select class="form-input" id="upChapterManga" onchange="onUpChapterMangaChange()"></select></div>
-    <div class="form-group"><label>رقم الفصل</label><input class="form-input" id="upChapterNum" type="number" min="1"></div>
-    <div id="upChapterTextWrap" style="display:none;">
-      <div class="form-group"><label>نص الفصل (للروايات)</label><textarea class="form-input" id="upChapterText" rows="6" placeholder="الصق نص الفصل هنا..."></textarea></div>
-      <p style="font-size:10px;color:var(--text-dim);margin-bottom:8px;">إذا عندك نص أصلي بلغة ثانية وحقوقه عندك، الصقه هنا واضغط ترجمة، بعدها انسخ الناتج فوق قبل الحفظ.</p>
-      <div class="form-group"><textarea class="form-input" id="upChapterTranslateSrc" rows="3" placeholder="نص للترجمة السريعة (اختياري)..."></textarea></div>
-      <button class="watch-btn" style="background:var(--card2); color:var(--text); border:1px solid var(--line); margin-bottom:8px;" onclick="translateForUpload()">ترجمة سريعة ← تعبئة تلقائية بالأعلى</button>
-    </div>
-    <div id="upChapterPagesWrap" style="display:none;">
-      <div class="form-group"><label>روابط صور الصفحات — عربي (رابط بكل سطر، بالترتيب)</label><textarea class="form-input" id="upChapterPages" rows="6" placeholder="https://.../page1.jpg&#10;https://.../page2.jpg"></textarea></div>
-      <div class="form-group"><label>روابط صور الصفحات — إنجليزي (اختياري، فقط إذا فريقنا سوى نسخة إنجليزية مطبّعة بنفسه)</label><textarea class="form-input" id="upChapterPagesEn" rows="6" placeholder="اتركه فاضي إذا ماكو نسخة إنجليزية بعد"></textarea></div>
-    </div>
-    <button class="watch-btn" onclick="saveChapter()">حفظ الفصل</button>
-    <div id="upChapterMsg" class="auth-msg"></div>
   </div>
   <div class="admin-panel2" data-ap="ban">
     <div class="form-group"><label>بريد العضو</label><input class="form-input" id="banEmailInput" placeholder="user@example.com"></div>
@@ -422,7 +688,7 @@
     <div class="form-group"><label>مستوى الصلاحية</label>
       <select class="form-input" id="newAdminLevel">
         <option value="1">مشرف — بلاغات وتعليقات وحظر أعضاء</option>
-        <option value="2">بيور تيم — كل صلاحيات المشرف + لوحة رفع المحتوى والفصول</option>
+        <option value="2">محرر محتوى — كل صلاحيات المشرف + الطلبات والفصول</option>
         <option value="3">مدير عام — كل الصلاحيات + إدارة الإداريين</option>
       </select>
     </div>
@@ -430,6 +696,22 @@
     <div id="addAdminMsg" class="auth-msg"></div>
     <div class="drawer-section-title" style="margin-top:18px;">الإداريون الحاليون</div>
     <div id="adminsList"></div>
+  </div>
+  <div class="admin-panel2" data-ap="pureteam">
+    <div class="drawer-section-title">رتبة "تيم بيور" — أعضاء يقدرون يرفعون محتوى مباشرة</div>
+    <div class="form-group"><label>بريد العضو</label><input class="form-input" id="newTeamEmail" placeholder="user@example.com"></div>
+    <button class="watch-btn" onclick="addPureTeamMember()">إضافة لتيم بيور</button>
+    <div class="drawer-section-title" style="margin-top:14px;">الأعضاء الحاليون</div>
+    <div id="pureTeamList"></div>
+  </div>
+  <div class="admin-panel2" data-ap="logins">
+    <div class="drawer-section-title">سجل تسجيل الدخول — منو دخل ومتى</div>
+    <div id="loginLogsList"></div>
+  </div>
+  <div class="admin-panel2" data-ap="deletecontent">
+    <div class="drawer-section-title">حذف عمل كامل (مانجا/مانهوا/رواية/كومكس)</div>
+    <p style="font-size:10px;color:var(--text-dim);margin-bottom:8px;">حذف نهائي — يشيل العمل وكل فصوله وكل التعليقات المرتبطة به دفعة وحدة. ما ينرجع.</p>
+    <div id="deleteContentList"></div>
   </div>
   <div class="admin-panel2" data-ap="tools">
     <div class="drawer-section-title">إعدادات تشغيل الموقع</div>
@@ -459,6 +741,41 @@
     <button class="watch-btn" style="background:var(--card2); color:var(--text); border:1px solid var(--line);" onclick="copyTranslateOut()">نسخ الترجمة</button>
   </div>
 </div>
+
+<div class="modal-overlay" id="uploadModalOverlay" onclick="closeModal('uploadModal')"></div>
+<div class="modal-window" id="uploadModal">
+  <div class="modal-head"><h3>رفع محتوى — تيم بيور</h3><div class="modal-close" onclick="closeModal('uploadModal')"><svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2"><line x1="5" y1="5" x2="19" y2="19"/><line x1="19" y1="5" x2="5" y2="19"/></svg></div></div>
+  <p style="font-size:10px;color:var(--text-dim);margin-bottom:10px;">هذا الرفع مباشر بدون مراجعة — تأكد إن المحتوى من عملك أو عندك حق نشره.</p>
+  <div class="drawer-section-title">بيانات العمل</div>
+  <div class="form-group"><label>معرّف العمل (إنجليزي، بدون مسافات، يُستخدم كرابط دائم)</label><input class="form-input" id="upKey" placeholder="مثال: my-manga-1"></div>
+  <div class="form-group"><label>العنوان (عربي)</label><input class="form-input" id="upTitle" placeholder="عنوان العمل بالعربي"></div>
+  <div class="form-group"><label>النوع</label>
+    <select class="form-input" id="upType"><option value="manhwa">مانهوا</option><option value="manga">مانجا</option><option value="novel">رواية</option><option value="comic">كومكس</option></select>
+  </div>
+  <div class="form-group"><label>التصنيف</label><input class="form-input" id="upGenre" placeholder="أكشن · خيال"></div>
+  <div class="form-group">
+    <label>الوصف (إنجليزي)</label>
+    <textarea class="form-input" id="upDescEn" rows="2" placeholder="Description in English..."></textarea>
+    <button class="watch-btn" style="margin-top:6px; background:var(--card2); color:var(--text); border:1px solid var(--line);" onclick="translateUploadDesc()">ترجمة تلقائية ← عربي</button>
+  </div>
+  <div class="form-group"><label>الوصف (عربي)</label><textarea class="form-input" id="upDescAr" rows="2" placeholder="يظهر هنا بعد الترجمة، أو اكتبه يدويًا"></textarea></div>
+  <button class="watch-btn" onclick="publishManga()">حفظ بيانات العمل</button>
+  <div id="upMangaMsg" class="auth-msg"></div>
+
+  <div class="drawer-section-title" style="margin-top:20px;">إضافة فصل</div>
+  <div class="form-group"><label>معرّف العمل المستهدف</label><input class="form-input" id="upChKey" placeholder="نفس المعرّف أعلاه"></div>
+  <div class="form-group"><label>رقم الفصل</label><input class="form-input" id="upChNum" type="number" placeholder="1"></div>
+  <div class="form-group" id="upChTextWrap">
+    <label>نص الفصل (إنجليزي — للروايات فقط)</label>
+    <textarea class="form-input" id="upChTextEn" rows="4" placeholder="Chapter text in English..."></textarea>
+    <button class="watch-btn" style="margin-top:6px; background:var(--card2); color:var(--text); border:1px solid var(--line);" onclick="translateUploadChapter()">ترجمة تلقائية ← عربي</button>
+    <textarea class="form-input" id="upChTextAr" rows="4" style="margin-top:8px;" placeholder="النص العربي يطلع هنا، أو اكتبه يدويًا"></textarea>
+  </div>
+  <div class="form-group"><label>روابط صفحات الفصل (مانجا/مانهوا/كومكس) — رابط بكل سطر</label><textarea class="form-input" id="upChPages" rows="4" placeholder="https://.../page1.jpg&#10;https://.../page2.jpg"></textarea></div>
+  <button class="watch-btn" onclick="publishChapter()">نشر الفصل</button>
+  <div id="upChMsg" class="auth-msg"></div>
+</div>
+
 
 
 <div class="modal-overlay" id="teamRoomModalOverlay" onclick="closeModal('teamRoomModal')"></div>
@@ -532,7 +849,119 @@
   <div class="modal-head"><h3>الملف الشخصي</h3><div class="modal-close" onclick="closeModal('publicProfileModal')"><svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2"><line x1="5" y1="5" x2="19" y2="19"/><line x1="19" y1="5" x2="5" y2="19"/></svg></div></div>
   <div class="acc-cover" style="margin-bottom:36px;"><img id="pubBannerImg" style="display:none;"><div class="acc-avatar-wrap" style="cursor:default;"><img id="pubAvatarImg"><svg id="pubAvatarPlaceholder" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/></svg></div></div>
   <div class="acc-name-block"><div class="nm" id="pubNameText">—</div><div class="rl" id="pubRoleText">عضو</div></div>
-  <div style="display:flex; justify-content:center; margin-top:16px;"><button class="btn btn-ghost" onclick="openReportF
+  <div style="display:flex; justify-content:center; margin-top:16px;"><button class="btn btn-ghost" onclick="openReportFlow('member', window.__pubProfileUid||'', document.getElementById('pubNameText').textContent)">إبلاغ عن هذا العضو</button></div>
+</div>
+
+<div class="modal-overlay" id="searchModalOverlay" onclick="closeModal('searchModal')"></div>
+<div class="modal-window" id="searchModal">
+  <div class="modal-head"><h3>بحث</h3><div class="modal-close" onclick="closeModal('searchModal')"><svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2"><line x1="5" y1="5" x2="19" y2="19"/><line x1="19" y1="5" x2="5" y2="19"/></svg></div></div>
+  <input type="text" class="form-input" id="liveSearchInput" placeholder="اكتب اسم الأنمي..." oninput="liveSearch()" style="margin-bottom:12px;">
+  <div class="search-tabs-row" id="searchCatTabs">
+    <span class="search-chip active" data-c="all">الكل</span>
+    <span class="search-chip" data-c="anime">أنمي</span>
+    <span class="search-chip" data-c="manga">مانجا</span>
+    <span class="search-chip" data-c="teams">فرق</span>
+  </div>
+  <div class="search-sort"><select class="form-input" id="sortSelect" onchange="liveSearch()"><option value="rel">الأكثر صلة</option><option value="rating">الأعلى تقييمًا</option><option value="name">الاسم أبجديًا</option></select></div>
+  <div id="searchDefault">
+    <div class="drawer-section-title">عمليات بحث رائجة</div>
+    <div class="search-chip-row">
+      <span class="search-chip" onclick="quickSearch('Solo Leveling')">Solo Leveling</span>
+      <span class="search-chip" onclick="quickSearch('القديسة')">القديسة الغافلة</span>
+      <span class="search-chip" onclick="quickSearch('نهر')">نهر السماء القرمزي</span>
+    </div>
+    <div class="drawer-section-title" style="display:flex; justify-content:space-between; align-items:center;"><span>بحث سابق</span><span style="color:var(--accent); cursor:pointer; text-transform:none; font-weight:700;" onclick="clearRecent()">مسح الكل</span></div>
+    <div class="search-chip-row" id="recentChips"><span style="font-size:11px;color:var(--text-dim);">لا يوجد بحث سابق بعد</span></div>
+  </div>
+  <div id="searchResults"></div>
+</div>
+
+<div class="modal-overlay" id="mangaModalOverlay" onclick="closeModal('mangaModal')"></div>
+<div class="modal-window" id="mangaModal">
+  <div class="modal-head"><h3>مانجا / مانوا</h3><div class="modal-close" onclick="closeModal('mangaModal')"><svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2"><line x1="5" y1="5" x2="19" y2="19"/><line x1="19" y1="5" x2="5" y2="19"/></svg></div></div>
+  <div id="mangaList"></div>
+</div>
+
+<div class="modal-overlay" id="teamsModalOverlay" onclick="closeModal('teamsModal')"></div>
+<div class="modal-window" id="teamsModal">
+  <div class="modal-head"><h3>الفرق المميزة</h3><div class="modal-close" onclick="closeModal('teamsModal')"><svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2"><line x1="5" y1="5" x2="19" y2="19"/><line x1="19" y1="5" x2="5" y2="19"/></svg></div></div>
+  <div id="teamsList"></div>
+</div>
+
+<div class="modal-overlay" id="settingsModalOverlay" onclick="closeModal('settingsModal')"></div>
+<div class="modal-window" id="settingsModal">
+  <div class="modal-head"><h3>الإعدادات</h3><div class="modal-close" onclick="closeModal('settingsModal')"><svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2"><line x1="5" y1="5" x2="19" y2="19"/><line x1="19" y1="5" x2="5" y2="19"/></svg></div></div>
+
+  <div class="drawer-section-title">هوية موقعك — اختر بين هويتين رئيسيتين</div>
+  <div class="theme-grid" id="identityGrid" style="grid-template-columns:repeat(2,1fr);"></div>
+
+  <div class="drawer-section-title">٧ تصاميم جاهزة — اختر تصميمك المفضل بضغطة وحدة</div>
+  <div class="theme-grid" id="presetGrid" style="grid-template-columns:repeat(2,1fr);"></div>
+
+  <div class="drawer-section-title">طراز العرض — شكل هيكلة الصفحات (تخصيص يدوي)</div>
+  <div class="theme-grid" id="layoutGrid">
+    <div class="layout-card" id="layoutCard-grid" onclick="setLayout('grid')"><div class="layout-preview lp-grid"><i></i><i></i><i></i></div><div class="ln">شرائط أفقية</div></div>
+    <div class="layout-card" id="layoutCard-list" onclick="setLayout('list')"><div class="layout-preview lp-list"><i></i><i></i><i></i></div><div class="ln">قائمة عريضة</div></div>
+    <div class="layout-card" id="layoutCard-cards" onclick="setLayout('cards')"><div class="layout-preview lp-cards"><i></i><i></i></div><div class="ln">بطاقات كبيرة</div></div>
+  </div>
+
+  <div class="drawer-section-title">المظهر — اختر لون التطبيق</div>
+  <div class="theme-grid" id="themeGrid"></div>
+
+  <div class="drawer-section-title">الحساب</div>
+  <div class="form-group"><label>البريد الإلكتروني</label><input class="form-input" value="kodi@animepure.app"></div>
+  <div class="form-group"><label>كلمة المرور</label><input class="form-input" type="password" value="********"></div>
+  <div class="switch-row"><div class="lbl">حساب عام</div><label class="switch"><input type="checkbox" checked><span class="slider-tg"></span></label></div>
+  <div class="drawer-section-title">الإشعارات</div>
+  <div class="switch-row"><div><div class="lbl">حلقات جديدة</div><div class="sub">تنبيه فوري عند صدور حلقة</div></div><label class="switch"><input type="checkbox" checked><span class="slider-tg"></span></label></div>
+  <div class="switch-row"><div><div class="lbl">ردود التعليقات</div></div><label class="switch"><input type="checkbox" checked><span class="slider-tg"></span></label></div>
+  <div class="switch-row"><div><div class="lbl">فصول المانجا الجديدة</div></div><label class="switch"><input type="checkbox" checked><span class="slider-tg"></span></label></div>
+  <div class="drawer-section-title">القراءة</div>
+  <div class="form-group"><label>اتجاه القراءة الافتراضي</label>
+    <select class="form-input" id="readDirSelect" onchange="readDirection=this.value">
+      <option value="rtl">يمين ← يسار (مانجا يابانية)</option>
+      <option value="ltr">يسار ← يمين (مانهوا/كومكس)</option>
+    </select>
+  </div>
+  <div class="form-group"><label>وضع القراءة الافتراضي</label><select class="form-input"><option>صفحة بصفحة</option><option>تمرير مستمر</option></select></div>
+  <div class="switch-row"><div><div class="lbl">فتح الفصل التالي تلقائيًا</div></div><label class="switch"><input type="checkbox" checked><span class="slider-tg"></span></label></div>
+  <div class="switch-row"><div><div class="lbl">توفير البيانات</div><div class="sub">صور أقل جودة عند البيانات الخلوية</div></div><label class="switch"><input type="checkbox"><span class="slider-tg"></span></label></div>
+  <div class="form-group"><label>لغة الترجمة</label><select class="form-input"><option>عربي</option><option>إنجليزي</option><option>بدون ترجمة</option></select></div>
+  <div class="drawer-section-title">الخصوصية</div>
+  <div class="switch-row"><div><div class="lbl">إظهار نشاطي للمتابعين</div></div><label class="switch"><input type="checkbox" checked><span class="slider-tg"></span></label></div>
+  <div class="switch-row"><div><div class="lbl">السماح بالرسائل من الجميع</div></div><label class="switch"><input type="checkbox"><span class="slider-tg"></span></label></div>
+  <div class="drawer-section-title">عام</div>
+  <div class="form-group"><label>لغة التطبيق</label><select class="form-input"><option>العربية</option><option>English</option></select></div>
+  <div class="drawer-menu">
+    <div class="drawer-item"><span class="left-part"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H8l-4 4V5z"/></svg>تواصل معنا</span></div>
+    <div class="drawer-item"><span class="left-part"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 2l2.9 6.3 6.9.7-5.2 4.6 1.6 6.8L12 16.9l-6.2 3.5 1.6-6.8L2.2 9l6.9-.7z"/></svg>قيّم التطبيق</span></div>
+    <div class="drawer-item" style="color:var(--heart);"><span class="left-part"><svg viewBox="0 0 24 24" stroke="var(--heart)"><path d="M4 7h16M9 7V5h6v2M7 7l1 13h8l1-13"/></svg>حذف الحساب</span></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="playerModalOverlay" onclick="closeModal('playerModal')"></div>
+<div class="modal-window" id="playerModal">
+  <div class="modal-head"><h3 id="playerTitle" style="font-size:15px;">قراءة</h3><div style="display:flex; align-items:center; gap:8px;"><div class="lang-toggle" id="readerLangToggle"><span data-l="ar" class="active" onclick="setReaderLang('ar')">عربي</span><span data-l="en" onclick="setReaderLang('en')">EN</span></div><div class="modal-close" onclick="closeModal('playerModal')"><svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2"><line x1="5" y1="5" x2="19" y2="19"/><line x1="19" y1="5" x2="5" y2="19"/></svg></div></div></div>
+
+  <div id="fontControlsRow" style="display:none; gap:8px; margin-bottom:12px;">
+    <span class="quality-chip" onclick="changeFontSize(-1)" style="font-weight:900;">أ−</span>
+    <span class="quality-chip active" id="fontSizeLabel" style="pointer-events:none;">١٦px</span>
+    <span class="quality-chip" onclick="changeFontSize(1)" style="font-weight:900;">أ+</span>
+  </div>
+
+  <div id="readerStream"></div>
+
+  <div class="progress-bar-bg" style="margin:4px 0 14px;"><div class="progress-bar-fill" id="playerProgress" style="width:6%"></div></div>
+  <button class="watch-btn" style="background:var(--card2); color:var(--text); border:1px solid var(--line);" onclick="downloadNext()"><svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/></svg>تحميل هذا الفصل</button>
+  <button class="watch-btn" style="background:transparent; color:var(--text-dim); border:1px dashed var(--line); margin-top:8px;" onclick="reportCurrentChapter()"><svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="1.8"><path d="M5 3v18"/><path d="M5 4h11l-3 4 3 4H5"/></svg>إبلاغ عن مشكلة بهذا الفصل</button>
+
+  <div class="comments-inline">
+    <div class="ttl"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H8l-4 4V5z"/></svg>تعليقات الفصل</div>
+    <div class="chat-box" id="epChatBox"><div class="chat-msg"><span class="like-btn" onclick="toggleLike(this)"><svg viewBox="0 0 24 24"><path d="M12 21s-7-4.35-9.5-8.5C.8 8.2 2.3 4.3 6.2 4.3c2 0 3.5 1.4 5.8 4 2.3-2.6 3.8-4 5.8-4 3.9 0 5.4 3.9 3.7 8.2C19 16.65 12 21 12 21z"/></svg><span class="lc">2</span></span><div class="chat-user">متابع_دائم <span>قبل ٣ د</span></div><div class="chat-text">نهاية الفصل صادمة</div></div></div>
+    <div class="chat-input-row"><input type="text" class="form-input" id="epCommentInput" placeholder="علّق على الفصل..."><button class="chat-send" onclick="sendEpComment()"><svg viewBox="0 0 24 24"><path d="M3 11l18-8-8 18-2-8z"/></svg></button></div>
+  </div>
+</div>
+
 <div class="modal-overlay" id="shareModalOverlay" onclick="closeModal('shareModal')"></div>
 <div class="modal-window sheet" id="shareModal">
   <div class="share-sheet">
@@ -577,7 +1006,6 @@
       <div class="rate-box"><div class="num" id="ovEpCount">14</div><div class="count">الفصول</div></div>
       <div class="rate-box"><div class="num" id="ovRank">#٣</div><div class="count">الترتيب</div></div>
     </div>
-    <div class="countdown-strip" id="detailsCountdown"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg><span id="detailsCountdownText">—</span></div>
     <button class="watch-btn" onclick="watchNext()"><svg viewBox="0 0 24 24"><path d="M6 4l14 8-14 8V4z"/></svg>اقرأ الآن</button>
     <div style="text-align:center; margin:-6px 0 12px;"><span style="font-size:11.5px; color:var(--accent); cursor:pointer; font-weight:700;" onclick="switchAnimeTab('episodes')">كل الفصول ‹</span></div>
     <div class="anime-action-buttons">
@@ -594,10 +1022,11 @@
     </div>
     <div class="my-rate-inline"><span class="lbl">تقييمك:</span><div id="starPicker"><span class="star-pick" data-v="1">★</span><span class="star-pick" data-v="2">★</span><span class="star-pick" data-v="3">★</span><span class="star-pick" data-v="4">★</span><span class="star-pick" data-v="5">★</span></div></div>
     <div class="comments-inline">
-      <div class="ttl"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H8l-4 4V5z"/></svg>التعليقات</div>
+      <div class="ttl-row"><div class="ttl"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H8l-4 4V5z"/></svg>التعليقات</div>
+        <div class="lang-toggle" id="commentSortToggle"><span data-s="desc" class="active" onclick="setCommentSort('desc')">الأحدث</span><span data-s="asc" onclick="setCommentSort('asc')">الأقدم</span></div>
+      </div>
       <div class="chat-box" id="chatBox">
-        <div class="chat-msg"><div class="chat-user"><span class="cu-name">نجم_الليل</span><span class="cu-meta"><span>قبل ٥ د</span><span class="chat-report" onclick="event.stopPropagation();openReportFlow('comment','demo1','هذا العمل قلب موازين كل شي')"><svg viewBox="0 0 24 24"><path d="M5 3v18"/><path d="M5 4h11l-3 4 3 4H5"/></svg>إبلاغ</span></span></div><div class="chat-text">هذا العمل قلب موازين كل شي</div></div>
-        <div class="chat-msg"><div class="chat-user"><span class="cu-name">هدوء_الروح</span><span class="cu-meta"><span>قبل ٢٠ د</span><span class="chat-report" onclick="event.stopPropagation();openReportFlow('comment','demo2','حابب اسلوب الفريق بالترجمة')"><svg viewBox="0 0 24 24"><path d="M5 3v18"/><path d="M5 4h11l-3 4 3 4H5"/></svg>إبلاغ</span></span></div><div class="chat-text">حابب اسلوب الفريق بالترجمة، شغل نظيف</div></div>
+        <div class="chat-skel"></div><div class="chat-skel"></div>
       </div>
       <div class="chat-input-row"><input type="text" class="form-input" id="commentInput" placeholder="اكتب تعليقك..."><button class="chat-send" onclick="sendComment()"><svg viewBox="0 0 24 24"><path d="M3 11l18-8-8 18-2-8z"/></svg></button></div>
     </div>
@@ -615,10 +1044,44 @@
     <div class="acc-lvl-badge"><div class="n">Lv.٧</div><div class="l">المستوى</div></div>
     <label class="acc-avatar-wrap"><img id="avatarImg"><svg id="avatarPlaceholderIcon" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/></svg><div class="avatar-edit-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/></svg></div><input type="file" accept="image/*" id="avatarInput" style="display:none;" onchange="onAvatarPick(event)"></label>
   </div>
-  <div class="acc-name-block"><div class="nm" id="accNameText">كودي</div><div class="rl" id="accRoleText">عضو · @kodi_anime</div><div class="since" id="sinceText">—</div></div>
-  <div class="acc-level-bar"><div class="row"><span>التقدم للمستوى القادم</span><span>٦٤٪</span></div><div class="
+  <div class="acc-name-block"><div class="nm" id="accNameText">عضو</div><div class="rl" id="accRoleText">—</div><div class="since" id="sinceText">—</div></div>
+  <div class="acc-level-bar"><div class="row"><span>التقدم للمستوى القادم</span><span>٦٤٪</span></div><div class="progress-bar-bg"><div class="progress-bar-fill" style="width:64%"></div></div></div>
+  <div class="acc-tabs" id="accTabsRow">
+    <div class="acc-tab active" data-t="overview" onclick="switchAccTab('overview')">نظرة عامة</div>
+    <div class="acc-tab" data-t="badges" onclick="switchAccTab('badges')">الأوسمة</div>
+    <div class="acc-tab" data-t="edit" onclick="switchAccTab('edit')">تعديل</div>
+  </div>
+  <div class="acc-panel active" data-p="overview">
+    <div class="account-stats">
+      <div class="stat-cell2"><svg viewBox="0 0 24 24"><path d="M6 4l14 8-14 8V4z"/></svg><div class="num" id="statEpisodes">0</div><div class="lbl">فصل قرأته</div></div>
+      <div class="stat-cell2"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg><div class="num" id="statHours">0</div><div class="lbl">دقيقة قراءة</div></div>
+      <div class="stat-cell2"><svg viewBox="0 0 24 24"><path d="M12 21s-7-4.35-9.5-8.5C.8 8.2 2.3 4.3 6.2 4.3c2 0 3.5 1.4 5.8 4 2.3-2.6 3.8-4 5.8-4 3.9 0 5.4 3.9 3.7 8.2C19 16.65 12 21 12 21z"/></svg><div class="num" id="statFav">0</div><div class="lbl">في المفضلة</div></div>
+      <div class="stat-cell2"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H8l-4 4V5z"/></svg><div class="num">12</div><div class="lbl">تعليق</div></div>
+    </div>
+  </div>
+  <div class="acc-panel" data-p="badges">
+    <div class="badges-grid">
+      <div class="badge-cell"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M4 8l3 3 5-6 5 6 3-3-2 10H6L4 8z"/></svg><div class="lbl">عضو ذهبي</div></div>
+      <div class="badge-cell"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 2l2.9 6.3 6.9.7-5.2 4.6 1.6 6.8L12 16.9l-6.2 3.5 1.6-6.8L2.2 9l6.9-.7z"/></svg><div class="lbl">قارئ نشط</div></div>
+      <div class="badge-cell locked"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/></svg><div class="lbl">ناقد محترف</div></div>
+      <div class="badge-cell locked"><svg viewBox="0 0 24 24"><path d="M8 4h8v4a4 4 0 0 1-8 0V4z"/><path d="M6 6H4v2a4 4 0 0 0 4 4"/><path d="M18 6h2v2a4 4 0 0 1-4 4"/><path d="M10 15h4v3h-4z"/><path d="M8 21h8"/></svg><div class="lbl">١٠٠ فصل</div></div>
+    </div>
+  </div>
+  <div class="acc-panel" data-p="edit">
+    <div class="form-group"><label>الاسم</label><input class="form-input" id="editName" placeholder="اكتب اسمك"></div>
+    <div class="form-group"><label>الاسم المستعار</label><input class="form-input" id="editUsername" placeholder="@اسمك_المستعار"></div>
+    <button class="watch-btn" onclick="saveProfile()">حفظ التعديلات</button>
+    <div id="editSaveMsg" class="auth-msg"></div>
+    <div class="drawer-menu" style="margin-top:6px;">
+      <div class="drawer-item" onclick="closeModal('accountModal'); openModal('settingsModal')"><span class="left-part"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19 12h2M3 12h2M12 3v2M12 19v2"/></svg>الإعدادات</span></div>
+      <div class="drawer-item" id="adminEntryBtn" style="display:none;" onclick="closeModal('accountModal'); openModal('adminModal')"><span class="left-part"><svg viewBox="0 0 24 24"><path d="M12 3l7 3v6c0 5-3 8-7 9-4-1-7-4-7-9V6l7-3z"/></svg>لوحة الإدارة</span></div>
+      <div class="drawer-item" id="uploadEntryBtn" style="display:none;" onclick="closeDrawer(); openModal('uploadModal')"><span class="left-part"><svg viewBox="0 0 24 24"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/></svg>رفع محتوى (تيم بيور)</span></div>
+      <div class="drawer-item" onclick="doSignOut()"><span class="left-part"><svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>تسجيل الخروج</span></div>
+    </div>
+  </div>
+</div>
+
 <script>
-// ===== السكربت الرئيسي =====
 let currentUser = null, authMode = "signin", fbReady = false, myAvatarUrl = '';
 function normalizeUser(u){
   if(!u) return null;
@@ -633,8 +1096,10 @@ function initAuthListener(){
   });
   loadAdminRoles();
   loadSiteSettings();
+  loadPureTeam();
 }
 window.addEventListener('firebase-ready', ()=>{ fbReady = true; initAuthListener(); });
+// لو موديول Firebase خلص التحميل وأطلق الحدث قبل لا يوصل هذا السطر (نادر لكن ممكن)، نتأكد يدويًا
 if(window.fbAuth && window.fb && !fbReady){ fbReady = true; }
 if(window.fbAuth && window.fb) initAuthListener();
 
@@ -653,8 +1118,11 @@ const THEMES = {
   modern:{name:"حديث", bg:"#0a0c11", bgRgb:"10,12,17", bgAlt:"#12151c", card:"#181c24", cardRgb:"24,28,36", card2:"#1f242e", text:"#f2f3f6", textDim:"#8b93a5", line:"rgba(255,255,255,.08)", lineStrong:"rgba(255,255,255,.14)", accent:"#ff7a45", accentRgb:"255,122,69", accentSoft:"#ffb08a", onAccent:"#1a0d05", secondary:"#4fd1c5", secondaryRgb:"79,209,197", star:"#ffc247", heart:"#ef5164"},
   kawaii:{name:"كيوت باستيل", bg:"#fff5f8", bgRgb:"255,245,248", bgAlt:"#ffeef3", card:"#ffffff", cardRgb:"255,255,255", card2:"#fff0f5", text:"#5a3d4a", textDim:"#b98a9c", line:"#f3d4de", lineStrong:"#f0b8cb", accent:"#ff9ec4", accentRgb:"255,158,196", accentSoft:"#ffc4dd", onAccent:"#5a2038", secondary:"#7ecbe0", secondaryRgb:"126,203,224", star:"#ffb84d", heart:"#ff6f91"},
   neon:{name:"نيون مظلم", bg:"#050507", bgRgb:"5,5,7", bgAlt:"#0a0a0f", card:"#0f0f16", cardRgb:"15,15,22", card2:"#15151f", text:"#f0f0ff", textDim:"#8888a8", line:"rgba(255,0,200,.15)", lineStrong:"rgba(0,255,220,.3)", accent:"#ff2fd6", accentRgb:"255,47,214", accentSoft:"#ff8ae8", onAccent:"#0a0006", secondary:"#00e5ff", secondaryRgb:"0,229,255", star:"#ffe600", heart:"#ff2f6d"},
-  minimal:{name:"مينمال أبيض", bg:"#fafafa", bgRgb:"250,250,250", bgAlt:"#f2f2f4", card:"#ffffff", cardRgb:"255,255,255", card2:"#f5f5f7", text:"#1a1a1e", textDim:"#8a8a92", line:"#e5e5ea", lineStrong:"#d5d5dc", accent:"#3d7bfd", accentRgb:"61,123,253", accentSoft:"#7aa5ff", onAccent:"#ffffff", secondary:"#20c997", secondaryRgb:"32,201,151", star:"#ffb800", heart:"#ff4d6d"}
+  minimal:{name:"مينمال أبيض", bg:"#fafafa", bgRgb:"250,250,250", bgAlt:"#f2f2f4", card:"#ffffff", cardRgb:"255,255,255", card2:"#f5f5f7", text:"#1a1a1e", textDim:"#8a8a92", line:"#e5e5ea", lineStrong:"#d5d5dc", accent:"#3d7bfd", accentRgb:"61,123,253", accentSoft:"#7aa5ff", onAccent:"#ffffff", secondary:"#20c997", secondaryRgb:"32,201,151", star:"#ffb800", heart:"#ff4d6d"},
+  aurora:{name:"أورورا", bg:"#0b0e1a", bgRgb:"11,14,26", bgAlt:"#12162a", card:"#181d35", cardRgb:"24,29,53", card2:"#212748", text:"#f4f5fb", textDim:"#9198c2", line:"rgba(255,255,255,.10)", lineStrong:"rgba(124,92,255,.35)", accent:"#7c5cff", accentRgb:"124,92,255", accentSoft:"#b3a1ff", onAccent:"#0d0620", secondary:"#22d3ee", secondaryRgb:"34,211,238", star:"#ffd166", heart:"#ff5c8a"}
 };
+/* هويتا الموقع الأساسيتان — تُعرضان أول شي بالإعدادات، وأي ثيمات إضافية أسفل منهما لمن يريد تخصيصًا أكثر */
+const PRIMARY_IDENTITIES = ["modern","aurora"];
 let currentTheme = "modern";
 let currentLayout = "grid";
 const PRESETS = [
@@ -664,7 +1132,8 @@ const PRESETS = [
   {name:"النيون الليلي", theme:"neon", layout:"grid"},
   {name:"المينمال الهادئ", theme:"minimal", layout:"list"},
   {name:"الملكي المضغوط", theme:"royal", layout:"grid"},
-  {name:"النيون الموسّع", theme:"neon", layout:"cards"}
+  {name:"النيون الموسّع", theme:"neon", layout:"cards"},
+  {name:"أورورا الليلي", theme:"aurora", layout:"grid"}
 ];
 function renderPresetGrid(){
   const box = document.getElementById('presetGrid'); if(!box) return;
@@ -683,15 +1152,21 @@ function applyPreset(i){
   setLayout(p.layout);
   renderPresetGrid();
 }
-function setLayout(name){
+function setLayout(name, skipSave){
   document.body.classList.remove('layout-grid','layout-list','layout-cards');
   document.body.classList.add('layout-'+name);
   currentLayout = name;
-  ['grid','list','cards'].forEach(n=>document.getElementById('layoutCard-'+n).classList.toggle('active', n===name));
+  ['grid','list','cards'].forEach(n=>{ const el=document.getElementById('layoutCard-'+n); if(el) el.classList.toggle('active', n===name); });
   renderPresetGrid();
   const ht = document.getElementById('heroTrack'); if(ht) ht.scrollTo({left:0});
+  if(!skipSave) saveIdentityChoice();
 }
-function applyTheme(name){
+function saveIdentityChoice(){
+  if(currentUser && fbReady){
+    window.fb.setDoc(window.fb.doc(window.fbDb,'profiles',currentUser.id), {theme:currentTheme, layout:currentLayout}, {merge:true}).catch(console.error);
+  }
+}
+function applyTheme(name, skipSave){
   const t = THEMES[name]; if(!t) return;
   const r = document.documentElement.style;
   r.setProperty('--bg', t.bg); r.setProperty('--bg-rgb', t.bgRgb); r.setProperty('--bg-alt', t.bgAlt);
@@ -702,8 +1177,21 @@ function applyTheme(name){
   r.setProperty('--secondary', t.secondary); r.setProperty('--secondary-rgb', t.secondaryRgb);
   r.setProperty('--star', t.star); r.setProperty('--heart', t.heart);
   currentTheme = name;
+  renderIdentityGrid();
   renderThemeGrid();
   renderPresetGrid();
+  if(!skipSave) saveIdentityChoice();
+}
+function renderIdentityGrid(){
+  const box = document.getElementById('identityGrid'); if(!box) return;
+  box.innerHTML = PRIMARY_IDENTITIES.map(k=>{
+    const t = THEMES[k];
+    const active = currentTheme===k;
+    return `<div class="preset-card ${active?'active':''}" onclick="applyTheme('${k}')" style="min-height:90px;">
+      <div class="preset-swatch" style="background:linear-gradient(135deg, ${t.bg}, ${t.accent} 70%, ${t.secondary});"></div>
+      <div class="pn">${t.name}${k==='modern'?' (الافتراضية)':''}</div>
+    </div>`;
+  }).join('');
 }
 function renderThemeGrid(){
   const box = document.getElementById('themeGrid'); if(!box) return;
@@ -716,21 +1204,28 @@ function renderThemeGrid(){
     </div>`;
   }).join('');
 }
-const ANIME = {};
+const ANIME = {
+  solo:{exclusive:true, views:"2.4M", title:"صاعد المستوى الوحيد", type:"manhwa", icon:"sword", genre:"أكشن · خيال", status:"مستمر", studio:"فريق الفانوس", season:"٢٠٢٦", rating:8.7, rank:"#٣", eps:112, nextH:26, desc:"صياد من أضعف الرتب يحصل على فرصة نادرة لإعادة صقل قوته بعد نجاته من زنزانة غامضة، ليبدأ رحلة تحوّل تقلب كل موازين عالم الصيادين."},
+  senki:{views:"890K", title:"مذكرات الجندية الصغيرة", type:"novel", icon:"shield", genre:"حربي · خيال", status:"مستمر", studio:"دار النشر الحرة", season:"٢٠٢٦", rating:8.1, rank:"#٩", eps:34, nextH:74, desc:"ضابطة شابة تقاد بحكمة باردة وسط حرب لا تنتهي، بينما تتصارع مع قوة غامضة تراقب كل قراراتها."},
+  nahr:{views:"640K", title:"نهر السماء القرمزي", type:"manga", icon:"crown", genre:"مغامرة · تاريخي", status:"مستمر", studio:"ظل الترجمة", season:"٢٠٢٦", rating:8.08, rank:"#١١", eps:58, nextH:8, desc:"فتاة تُنقل فجأة إلى زمن آخر، لتجد نفسها وسط صراع عروش يهدد بإعادة رسم خريطة مملكة كاملة."},
+  aila:{exclusive:true, views:"1.1M", title:"عائلة تحت شجرة التوت", type:"comic", icon:"tree", genre:"دراما · شريحة حياة", status:"مستمر", studio:"نجوم الأنمي", season:"٢٠٢٦", rating:8.3, rank:"#٧", eps:41, nextH:50, desc:"عائلة تعيد ترتيب حياتها بعد غياب طويل، وسط قرية هادئة تخفي أسرارًا قديمة بين جدرانها."},
+  qadisa:{exclusive:true, views:"1.7M", title:"القديسة الغافلة", type:"manhwa", icon:"sparkle", genre:"فانتازيا · إيزيكاي", status:"مستمر", studio:"فريق الفانوس", season:"٢٠٢٦", rating:8.2, rank:"#٥", eps:87, nextH:5, desc:"فتاة تُنقل لعالم آخر دون أن تدرك أنها تحمل قوة القديسة المنتظرة، وسط بلاط ملكي مليء بالدسائس."},
+  darb:{views:"520K", title:"درب الحيّ القديم", type:"manga", icon:"heartf", genre:"رومانسي · شريحة حياة", status:"مستمر", studio:"ظل الترجمة", season:"٢٠٢٦", rating:8.1, rank:"#١٠", eps:29, nextH:98, desc:"صديقان منذ الطفولة يعيدان اكتشاف مشاعرهما وسط حي هادئ يحمل ذكريات لا تُنسى."},
+  shati:{views:"410K", title:"شاطئ الصيف الثالث", type:"comic", icon:"wave", genre:"شريحة حياة · كوميدي", status:"مستمر", studio:"نجوم الأنمي", season:"٢٠٢٦", rating:7.9, rank:"#١٤", eps:18, nextH:122, desc:"مجموعة أصدقاء تقضي صيفًا أخيرًا معًا قبل تفرقهم للجامعات، بين ضحك وحنين."},
+  amir:{views:"760K", title:"أمير التيه الأقوى", type:"manhwa", icon:"crown", genre:"فانتازيا · أكشن", status:"مستمر", studio:"فريق الفانوس", season:"٢٠٢٦", rating:8.0, rank:"#١٢", eps:63, nextH:32, desc:"أمير منبوذ يُخفي قوة هائلة خلف مظهر هادئ، ويخوض تيهًا خطيرًا لإثبات جدارته."},
+  faris:{views:"330K", title:"فارس العظام الثاني", type:"novel", icon:"trending", genre:"فانتازيا · إيزيكاي", status:"مستمر", studio:"دار النشر الحرة", season:"٢٠٢٦", rating:7.8, rank:"#١٦", eps:22, nextH:146, desc:"فارس عظمي يستمر بمغامراته في عالم آخر، يواجه تنانين وأسرارًا أقدم مما توقع."}
+};
 const TYPE_LABELS = {manga:"مانجا", manhwa:"مانهوا", novel:"رواية", comic:"كومكس"};
-function getMangaList(){
-  return Object.keys(ANIME).filter(k=>ANIME[k].type==='manga'||ANIME[k].type==='comic').map(k=>({key:k, title:ANIME[k].title, icon:ANIME[k].icon, ch:'الفصل '+(ANIME[k].eps||1), prog:0}));
-}
-let TEAMS = [];
-async function loadTeamsFromFirestore(){
-  if(!fbReady) return;
-  try{
-    const {collection, getDocs, limit, query} = window.fb;
-    const snap = await getDocs(query(collection(window.fbDb,'teams'), limit(30)));
-    TEAMS = snap.docs.map(d=>{ const t=d.data(); return {id:d.id, name:t.name||'فريق', icon:'shield', sub:t.description||''}; });
-  }catch(e){ console.error('تعذر تحميل الفرق:', e); }
-}
-if(fbReady) loadTeamsFromFirestore(); else window.addEventListener('firebase-ready', loadTeamsFromFirestore, {once:true});
+const MANGA = [
+  {title:"ظل الوريث المنسي", icon:"sword", ch:"الفصل ١٢٤", prog:60},
+  {title:"همسات القمر السابع", icon:"sparkle", ch:"الفصل ٨٩", prog:35},
+  {title:"سيف بلا اسم", icon:"shield", ch:"الفصل ٢٠٣", prog:80}
+];
+const TEAMS = [
+  {name:"فريق الفانوس", icon:"shield", sub:"١٢٠ عمل مترجم · ترجمة عربية"},
+  {name:"ظل الترجمة", icon:"sword", sub:"٨٥ عمل مترجم · جودة عالية"},
+  {name:"نجوم الأنمي", icon:"sparkle", sub:"٦٠ عمل مترجم · سرعة إصدار"}
+];
 const statusLabels = {plan:"مخطط", watching:"يُشاهد", done:"مكتمل", dropped:"متروك"};
 function svgIcon(name, cls){ return `<svg class="${cls||''}" viewBox="0 0 24 24">${IC[name]||IC.sparkle}</svg>`; }
 const nextEpAt = {}; Object.keys(ANIME).forEach(k=>{ nextEpAt[k] = Date.now() + ANIME[k].nextH*3600000; });
@@ -742,9 +1237,9 @@ function fmtCountdown(ms){
   return `خلال ${m} دقيقة`;
 }
 
-let currentAnimeKey=null, currentEpNum=1, isPlaying=false;
-const favorites=new Set(), followed=new Set(), watchedEps={}, animeStatus={}, recentSearches=[], downloads=[];
-let lastRead = {};
+let currentAnimeKey="solo", currentEpNum=1, isPlaying=false;
+const favorites=new Set(), followed=new Set(["solo"]), watchedEps={}, animeStatus={}, recentSearches=[], downloads=[];
+let lastRead = {}; // { mangaKey: {chapter:Number, at:timestamp} } — لتتبع آخر فصل وصله القارئ لكل عمل
 function saveLastRead(){
   if(currentUser && fbReady){
     window.fb.setDoc(window.fb.doc(window.fbDb,'profiles',currentUser.id), {last_read:lastRead}, {merge:true}).catch(console.error);
@@ -768,15 +1263,12 @@ function renderCard(key){
   </div>`;
 }
 function viewsToNum(v){ const n=parseFloat(v); return v.includes('M')?n*1e6:v.includes('K')?n*1e3:n; }
-function emptyRow(msg){ return `<div class="empty-state" style="min-width:100%;">${svgIcon('sparkle')}<div class="txt">${msg}</div></div>`; }
 function renderRows(){
-  const keys = Object.keys(ANIME);
-  document.getElementById('season').innerHTML = keys.length ? keys.slice(0,4).map(renderCard).join('') : emptyRow('ماكو أعمال مرفوعة بعد');
-  document.getElementById('latest').innerHTML = keys.length ? keys.map(renderCard).join('') : emptyRow('ماكو أعمال مرفوعة بعد');
-  document.getElementById('topRated').innerHTML = keys.length ? [...keys].sort((a,b)=>ANIME[b].rating-ANIME[a].rating).slice(0,6).map(renderCard).join('') : emptyRow('ماكو تقييمات بعد');
-  document.getElementById('mostViewed').innerHTML = keys.length ? [...keys].sort((a,b)=>viewsToNum(ANIME[b].views)-viewsToNum(ANIME[a].views)).slice(0,6).map(renderCard).join('') : emptyRow('ماكو مشاهدات بعد');
-  const excl = keys.filter(k=>ANIME[k].exclusive);
-  document.getElementById('exclusiveRow').innerHTML = excl.length ? excl.map(renderCard).join('') : emptyRow('ماكو أعمال حصرية بعد');
+  document.getElementById('season').innerHTML = ["solo","senki","nahr","qadisa"].map(renderCard).join('');
+  document.getElementById('latest').innerHTML = Object.keys(ANIME).map(renderCard).join('');
+  document.getElementById('topRated').innerHTML = Object.keys(ANIME).sort((a,b)=>ANIME[b].rating-ANIME[a].rating).slice(0,6).map(renderCard).join('');
+  document.getElementById('mostViewed').innerHTML = Object.keys(ANIME).sort((a,b)=>viewsToNum(ANIME[b].views)-viewsToNum(ANIME[a].views)).slice(0,6).map(renderCard).join('');
+  document.getElementById('exclusiveRow').innerHTML = Object.keys(ANIME).filter(k=>ANIME[k].exclusive).map(renderCard).join('');
   renderContinue();
 }
 function renderContinue(){
@@ -794,12 +1286,15 @@ function renderContinue(){
 }
 renderRows();
 
+/* ===== تحميل المانهاوا الحقيقية من Firestore (collection "mangas")
+   لو الكولكشن فاضي (ما رفع محتوى بعد) نبقي البيانات التجريبية كما هي ===== */
 async function loadMangasFromFirestore(){
   if(!fbReady) return;
   try{
     const {collection, getDocs} = window.fb;
     const snap = await getDocs(collection(window.fbDb, 'mangas'));
-    Object.keys(ANIME).forEach(k=>delete ANIME[k]);
+    if(snap.empty) return; // ماكو بيانات مرفوعة بعد — نخلي البيانات التجريبية
+    Object.keys(ANIME).forEach(k=>delete ANIME[k]); // نفرّغ البيانات التجريبية
     snap.forEach(docSnap=>{
       const d = docSnap.data();
       ANIME[docSnap.id] = {
@@ -812,7 +1307,6 @@ async function loadMangasFromFirestore(){
     });
     Object.keys(ANIME).forEach(k=>{ nextEpAt[k] = Date.now() + ANIME[k].nextH*3600000; });
     renderRows();
-    renderHero();
   }catch(e){ console.error('تعذر تحميل المانهاوا من Firestore:', e); }
 }
 if(fbReady) loadMangasFromFirestore();
@@ -828,8 +1322,8 @@ function filterByType(type){
 
 function openGuide(which){
   document.getElementById('guideTitle').textContent = which==='season' ? 'أحدث الحلقات' : 'كل الأعمال';
-  const keys = which==='season' ? Object.keys(ANIME).slice(0,4) : Object.keys(ANIME);
-  document.getElementById('guideGrid').innerHTML = keys.length ? keys.map(renderCard).join('') : `<div class="empty-state">${svgIcon('sparkle')}<div class="txt">ماكو أعمال مرفوعة بعد</div></div>`;
+  const keys = which==='season' ? ["solo","senki","nahr","qadisa"] : Object.keys(ANIME);
+  document.getElementById('guideGrid').innerHTML = keys.map(renderCard).join('');
   openModal('guideModal');
 }
 function renderUpcoming(){
@@ -855,13 +1349,14 @@ function openModal(id){
   if(id==='favoritesModal') renderFavorites();
   if(id==='accountModal') renderAccountStats();
   if(id==='mangaModal') renderManga();
-  if(id==='teamsModal') renderTeams();
+  if(id==='teamsModal') loadTeamPanel();
   if(id==='upcomingModal') renderUpcoming();
   if(id==='downloadsModal') renderDownloads();
   if(id==='storeModal'){ currentStoreCat='all'; renderStoreCats(); renderStoreGrid('all'); document.getElementById('pointsNum').textContent = isAdmin()?'∞':userPoints; }
   if(id==='adminModal'){ if(!isAdmin()){ closeModal('adminModal'); alert('هذا القسم للإدارة فقط'); return; } loadAdminSubs(); }
+  if(id==='uploadModal'){ if(!isPureTeam()){ closeModal('uploadModal'); alert('هذا القسم لأعضاء تيم بيور فقط'); return; } }
   if(id==='accountModal' && currentUser) loadMyProfile();
-  if(id==='settingsModal'){ renderThemeGrid(); setLayout(currentLayout); renderPresetGrid(); }
+  if(id==='settingsModal'){ renderIdentityGrid(); renderThemeGrid(); setLayout(currentLayout); renderPresetGrid(); }
   if(id==='accountModal' && !currentUser){ closeModal('accountModal'); openModal('authModal'); return; }
   if(id==='searchModal'){document.getElementById('liveSearchInput').value=''; document.getElementById('searchResults').innerHTML=''; document.getElementById('searchDefault').style.display='block'; renderRecentChips();}
   updateNav();
@@ -869,7 +1364,7 @@ function openModal(id){
 function closeModal(id){document.getElementById(id).classList.remove('open'); const ov=document.getElementById(id+'Overlay'); if(ov) ov.classList.remove('open'); updateNav();}
 function updateNav(){ document.querySelectorAll('.nav-btn').forEach((b,i)=>b.classList.toggle('active', i===0)); }
 function goHome(){
-  ['drawer','guideModal','upcomingModal','downloadsModal','favoritesModal','reportModal','publicProfileModal','searchModal','mangaModal','teamsModal','settingsModal','playerModal','shareModal','animeDetailsModal','accountModal','authModal'].forEach(id=>{
+  ['drawer','guideModal','upcomingModal','downloadsModal','favoritesModal','reportModal','publicProfileModal','uploadModal','searchModal','mangaModal','teamsModal','settingsModal','playerModal','shareModal','animeDetailsModal','accountModal','authModal'].forEach(id=>{
     const el=document.getElementById(id); if(el) el.classList.remove('open');
     const ov=document.getElementById(id+'Overlay'); if(ov) ov.classList.remove('open');
   });
@@ -923,26 +1418,114 @@ function openAnimeDetails(key){
   document.getElementById('ovEpCount').textContent=a.eps;
   document.getElementById('ovRank').textContent=a.rank;
   document.getElementById('animeDesc').textContent=a.desc;
-  document.getElementById('infoGenre').text
-// ===== دوال التعليقات والبلاغات والملف الشخصي والمتجر والإدارة =====
+  document.getElementById('infoGenre').textContent=a.genre;
+  document.getElementById('infoStatus').textContent=a.status;
+  document.getElementById('infoStudio').textContent=a.studio;
+  document.getElementById('infoSeason').textContent=a.season;
+  document.getElementById('animeFavIcon').classList.toggle('fav-on', favorites.has(key));
+  document.querySelectorAll('#starPicker .star-pick').forEach(s=>s.classList.remove('on'));
+  if(!watchedEps[key]) watchedEps[key]=new Set();
+  refreshEpGrid();
+  const sim = Object.keys(ANIME).filter(k=>k!==key).slice(0,6);
+  document.getElementById('similarGrid').innerHTML = sim.map(renderCard).join('');
+  switchAnimeTab('overview');
+  loadComments(key);
+  openModal('animeDetailsModal');
+}
+function refreshEpGrid(){
+  const a=ANIME[currentAnimeKey];
+  document.getElementById('epGrid').innerHTML = Array.from({length:a.eps},(_,i)=>i+1).map(n=>{
+    const w=watchedEps[currentAnimeKey].has(n);
+    return `<div class="ep-btn ${w?'watched':''}" onclick="openPlayer(${n})"><svg viewBox="0 0 24 24"><path d="M4 19V5c0-1 .8-1.7 2-1.4 2 .5 4 1.4 6 1.4s4-.9 6-1.4c1.2-.3 2 .4 2 1.4v14c0 1-.8 1.7-2 1.4-2-.5-4-1.4-6-1.4s-4 .9-6 1.4c-1.2.3-2-.4-2-1.4z"/></svg>فصل ${n}</div>`;
+  }).join('');
+}
+function watchNext(){
+  const a = ANIME[currentAnimeKey];
+  const w = watchedEps[currentAnimeKey] || new Set();
+  let n = 1; while(w.has(n) && n<a.eps) n++;
+  openPlayer(n);
+}
+function downloadNext(){
+  const a = ANIME[currentAnimeKey];
+  const done = downloads.filter(d=>d.key===currentAnimeKey).length;
+  if(done>=a.eps){ alert('كل حلقات هذا العمل محمّلة بالفعل'); return; }
+  const n = done+1;
+  downloads.push({key:currentAnimeKey, ep:n});
+  document.getElementById('dlCountTag').textContent = downloads.length;
+  alert(`جاري تحميل الفصل ${n} من ${a.title}`);
+}
+function renderDownloads(){
+  const box = document.getElementById('downloadsList');
+  if(downloads.length===0){ box.innerHTML = `<div class="empty-state">${svgIcon('sparkle')}<div class="txt">ماكو حلقات محمّلة بعد<br>اضغط "تحميل" داخل أي عمل لإضافته هنا</div></div>`; return; }
+  box.innerHTML = downloads.map((d,i)=>{
+    const a = ANIME[d.key];
+    return `<div class="dl-item"><div class="dl-ic">${svgIcon(a.icon)}</div><div class="dl-info"><div class="t">${a.title}</div><div class="s">الحلقة ${d.ep} · محمّلة</div></div><div class="fav-remove" onclick="removeDownload(${i})"><svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2"><line x1="5" y1="5" x2="19" y2="19"/><line x1="19" y1="5" x2="5" y2="19"/></svg></div></div>`;
+  }).join('');
+}
+function removeDownload(i){ downloads.splice(i,1); document.getElementById('dlCountTag').textContent = downloads.length; renderDownloads(); }
+function toggleFollow(){
+  if(followed.has(currentAnimeKey)) followed.delete(currentAnimeKey); else followed.add(currentAnimeKey);
+  document.getElementById('followPill').classList.toggle('on', followed.has(currentAnimeKey));
+  document.getElementById('followPill').textContent = followed.has(currentAnimeKey) ? 'أتابعه' : '+ متابعة';
+}
+function switchAnimeTab(tab){
+  document.querySelectorAll('.anime-subtab').forEach(t=>t.classList.toggle('active', t.dataset.tab===tab));
+  document.querySelectorAll('.anime-panel').forEach(p=>p.classList.toggle('active', p.dataset.panel===tab));
+}
+document.getElementById('starPicker').addEventListener('click', e=>{
+  const el=e.target.closest('.star-pick'); if(!el) return;
+  const v=+el.dataset.v;
+  document.querySelectorAll('#starPicker .star-pick').forEach(s=>s.classList.toggle('on', +s.dataset.v<=v));
+});
+
+/* ===== تعليقات حقيقية عبر Firestore (collection "comments") ===== */
+function renderCommentRow(c, withReport){
+  const name = c.displayName || (c.uid ? 'قارئ' : 'زائر');
+  const safeName = name.replace(/'/g,"\\'").replace(/"/g,'&quot;');
+  const safeText = (c.text||'').replace(/</g,'&lt;').replace(/'/g,'&#39;');
+  let reportBtn = '';
+  if(withReport){
+    reportBtn += `<span class="chat-report" onclick="event.stopPropagation();openReportFlow('comment','${c.id||''}','${safeText.slice(0,40).replace(/"/g,'&quot;')}',{authorUid:'${c.uid||''}'})"><svg viewBox="0 0 24 24"><path d="M5 3v18"/><path d="M5 4h11l-3 4 3 4H5"/></svg>إبلاغ</span>`;
+    if(c.uid) reportBtn += `<span class="chat-report" onclick="event.stopPropagation();openReportFlow('member','${c.uid}','${safeName}')"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/></svg>إبلاغ عن العضو</span>`;
+  }
+  const avatarHtml = c.avatarUrl
+    ? `<img src="${c.avatarUrl}" class="chat-avatar">`
+    : `<span class="chat-avatar ph" style="background:${avatarColor(name)};">${(name||'?').trim().charAt(0)}</span>`;
+  const nameClick = c.uid ? `onclick="openPublicProfile('${c.uid}')" style="cursor:pointer;"` : '';
+  return `<div class="chat-msg"><div class="chat-user"><span ${nameClick} style="display:flex;align-items:center;gap:6px;cursor:${c.uid?'pointer':'default'};">${avatarHtml}<span class="cu-name">${name}</span></span><span class="cu-meta"><span>الآن</span>${reportBtn}</span></div><div class="chat-text">${safeText}</div></div>`;
+}
+const AVATAR_PALETTE = ['#ef7f5c','#5cb0ef','#8b5cf6','#ef5c8f','#5cef9e','#efc95c','#5c7fef','#ef5c5c'];
+function avatarColor(name){
+  let h=0; for(let i=0;i<(name||'?').length;i++) h = (h*31 + name.charCodeAt(i)) >>> 0;
+  return AVATAR_PALETTE[h % AVATAR_PALETTE.length];
+}
+let commentSortDir = 'desc';
+function setCommentSort(dir){
+  commentSortDir = dir;
+  document.querySelectorAll('#commentSortToggle span').forEach(s=>s.classList.toggle('active', s.dataset.s===dir));
+  loadComments(currentAnimeKey);
+}
 async function loadComments(mangaKey){
   const box = document.getElementById('chatBox'); if(!box || !fbReady) return;
+  box.innerHTML = '<div class="chat-skel"></div><div class="chat-skel"></div>';
   try{
     const {collection, query, where, orderBy, limit, getDocs} = window.fb;
-    const snap = await getDocs(query(collection(window.fbDb,'comments'), where('mangaId','==',mangaKey), where('chapterNum','==',null), orderBy('createdAt','desc'), limit(30)));
-    const rows = snap.docs.map(d=>({id:d.id, ...d.data()})).reverse();
+    const snap = await getDocs(query(collection(window.fbDb,'comments'), where('mangaId','==',mangaKey), where('chapterNum','==',null), orderBy('createdAt', commentSortDir==='desc'?'desc':'asc'), limit(30)));
+    const rows = snap.docs.map(d=>({id:d.id, ...d.data()}));
     box.innerHTML = rows.length ? rows.map(c=>renderCommentRow(c,true)).join('') : `<div class="chat-msg"><div class="chat-text" style="color:var(--text-dim);">كن أول من يعلّق على هذا العمل</div></div>`;
     box.scrollTop = box.scrollHeight;
-  }catch(e){ console.error('تعذر تحميل التعليقات:', e); }
+  }catch(e){ console.error('تعذر تحميل التعليقات:', e); box.innerHTML=''; }
 }
 async function loadEpComments(mangaKey, n){
   const box = document.getElementById('epChatBox'); if(!box || !fbReady) return;
+  box.innerHTML = '<div class="chat-skel"></div>';
   try{
     const {collection, query, where, orderBy, limit, getDocs} = window.fb;
     const snap = await getDocs(query(collection(window.fbDb,'comments'), where('mangaId','==',mangaKey), where('chapterNum','==',n), orderBy('createdAt','desc'), limit(30)));
     const rows = snap.docs.map(d=>({id:d.id, ...d.data()})).reverse();
     box.innerHTML = rows.length ? rows.map(c=>renderCommentRow(c,true)).join('') : '';
     box.scrollTop = box.scrollHeight;
+    if(readerLang==='ar') translateVisibleComments('epChatBox');
   }catch(e){ console.error('تعذر تحميل تعليقات الفصل:', e); }
 }
 async function sendComment(){
@@ -950,16 +1533,15 @@ async function sendComment(){
   if(!checkNotBanned()) return;
   if(!currentUser && SITE_SETTINGS.blockGuestComments){ alert('التعليق كزائر متوقف حاليًا — سجّل الدخول للمتابعة'); return; }
   if(SITE_SETTINGS.commentsLocked && !isAdmin()){ alert('التعليقات مقفلة مؤقتًا من الإدارة'); return; }
-  const box=document.getElementById('chatBox');
   const displayName = currentUser ? (currentUser.displayName || currentUser.email.split('@')[0]) : 'زائر';
-  box.insertAdjacentHTML('beforeend', renderCommentRow({text:val, displayName, uid:currentUser?currentUser.id:null, avatarUrl:myAvatarUrl}, true));
-  input.value=''; box.scrollTop=box.scrollHeight;
+  input.value='';
   if(fbReady){
     try{
       await window.fb.addDoc(window.fb.collection(window.fbDb,'comments'), {
         mangaId: currentAnimeKey, chapterNum: null, text: val, uid: currentUser?currentUser.id:null,
         displayName, avatarUrl: myAvatarUrl||null, createdAt: window.fb.serverTimestamp()
       });
+      loadComments(currentAnimeKey);
     }catch(e){ console.error('تعذر حفظ التعليق:', e); }
   }
 }
@@ -983,8 +1565,7 @@ async function sendEpComment(){
   }
 }
 document.getElementById('epCommentInput').addEventListener('keydown', e=>{ if(e.key==='Enter') sendEpComment(); });
-
-// نظام البلاغات
+/* ===== نظام البلاغات: أسباب محددة حسب نوع الهدف (تعليق / فصل / عمل / عضو) — مشكلة 7 ===== */
 const REPORT_REASONS = {
   comment: ['محتوى مسيء أو غير لائق','سبام أو إعلان','تنمر أو تحرش','سبويلر بدون تحذير','أخرى'],
   chapter: ['روابط أو صفحات لا تعمل','صور مفقودة أو غير مكتملة','ترجمة سيئة أو غير مفهومة','ترتيب الصفحات خاطئ','أخرى'],
@@ -1034,6 +1615,7 @@ async function submitReport(){
     setTimeout(()=>closeModal('reportModal'), 1100);
   }catch(e){ msg.className='auth-msg err'; msg.textContent='تعذر إرسال البلاغ، حاول مرة أخرى'; console.error(e); }
 }
+/* دالة قديمة كانت تستدعى مباشرة من التعليقات بدون سبب محدد — أبقيناها كواجهة خلفية متوافقة تفتح نافذة الأسباب بدل الرسالة الجاهزة */
 function reportItem(type, id, label, extra){ openReportFlow(type||'comment', id, label, extra); }
 function reportCurrentManga(){
   const a = ANIME[currentAnimeKey]; if(!a) return;
@@ -1043,8 +1625,7 @@ function reportCurrentChapter(){
   const a = ANIME[currentAnimeKey]; if(!a) return;
   openReportFlow('chapter', currentAnimeKey+'#'+currentEpNum, `${a.title} — فصل ${currentEpNum}`, {mangaKey:currentAnimeKey, chapterNum:currentEpNum});
 }
-
-// ملف شخصي عام
+/* ===== ملف شخصي عام (للقراءة فقط) — يفتح عند الضغط على اسم أو صورة أي عضو بالتعليقات ===== */
 async function openPublicProfile(uid){
   if(!uid || !fbReady) return;
   window.__pubProfileUid = uid;
@@ -1068,71 +1649,10 @@ async function openPublicProfile(uid){
   }catch(e){ console.error(e); nameEl.textContent='تعذر تحميل الملف'; }
 }
 
-// القارئ المستمر
-let readDirection = 'rtl';
+/* ===== continuous reader: chapters flow one under another with a divider label ===== */
+let readDirection = 'rtl';   // إعداد عام: اتجاه القراءة
 let novelFontSize = 16;
-let streamLoadedUpTo = 0;
-let readerLang = 'ar';
-let readerChapters = [];
-async function translateText(text, targetLang){
-  try{
-    const res = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${targetLang}&dt=t&q=${encodeURIComponent(text)}`);
-    const data = await res.json();
-    return data[0].map(chunk=>chunk[0]).join('');
-  }catch(e){ return text; }
-}
-async function renderChapterBlock(container, n, chData, a){
-  const divider = document.createElement('div');
-  divider.className = 'chap-divider';
-  divider.innerHTML = `<span>دخلت الفصل رقم ${n}</span>`;
-  container.appendChild(divider);
-  if(a.type === 'novel'){
-    const p = document.createElement('div');
-    p.className = 'reader-para';
-    p.style.fontSize = novelFontSize+'px';
-    const original = (chData && chData.text) ? chData.text : NOVEL_SAMPLE;
-    p.textContent = readerLang==='ar' ? original : '...جاري الترجمة';
-    container.appendChild(p);
-    if(readerLang!=='ar'){
-      const cacheKey = 'en';
-      if(chData && chData['text_'+cacheKey]) p.textContent = chData['text_'+cacheKey];
-      else{ const t = await translateText(original, readerLang); if(chData) chData['text_'+cacheKey]=t; p.textContent = t; }
-    }
-  } else {
-    const pages = (readerLang==='en' && chData && Array.isArray(chData.pages_en) && chData.pages_en.length) ? chData.pages_en
-      : (chData && Array.isArray(chData.pages) ? chData.pages : []);
-    if(readerLang==='en' && chData && (!chData.pages_en || !chData.pages_en.length)){
-      const note = document.createElement('div');
-      note.style.cssText = 'font-size:11px;color:var(--text-dim);text-align:center;padding:6px 0;';
-      note.textContent = 'ماكو نسخة إنجليزية لهذا الفصل بعد — يظهر بالعربي';
-      container.appendChild(note);
-    }
-    if(pages.length){
-      pages.forEach(url=>{
-        const pg = document.createElement('div');
-        pg.className = 'reader-page';
-        pg.innerHTML = `<img src="${url}" loading="lazy" style="width:100%; display:block;">`;
-        container.appendChild(pg);
-      });
-    } else {
-      for(let i=1;i<=4;i++){
-        const pg = document.createElement('div');
-        pg.className = 'reader-page';
-        pg.innerHTML = `<svg viewBox="0 0 24 24">${IC[a.icon]}</svg>`;
-        container.appendChild(pg);
-      }
-    }
-  }
-}
-function setReaderLang(lang){
-  readerLang = lang;
-  document.getElementById('langToggleAr').classList.toggle('active', lang==='ar');
-  document.getElementById('langToggleEn').classList.toggle('active', lang==='en');
-  const stream = document.getElementById('readerStream');
-  stream.innerHTML = '';
-  const a = ANIME[currentAnimeKey];
-  readerChapters.forEach(item=>renderChapterBlock(stream, item.num, item.chData, a));
-}
+let streamLoadedUpTo = 0;    // آخر فصل تم تحميله بالتيار المستمر
 const NOVEL_SAMPLE = "كان الليل هادئًا حين بدأت القصة، والرياح تحمل معها همسًا لا يفهمه إلا من عاش تلك اللحظة. في هذا الفصل تتكشف تفاصيل جديدة عن الشخصيات، وتتقاطع مصائرها بطريقة لم يتوقعها أحد.";
 
 function openPlayer(n){
@@ -1145,19 +1665,45 @@ function openPlayer(n){
   document.getElementById('playerTitle').textContent = a.title;
   const isNovel = a.type === 'novel';
   document.getElementById('fontControlsRow').style.display = isNovel ? 'flex' : 'none';
+  document.getElementById('readerLangToggle').style.display = isNovel ? 'flex' : 'none';
   const stream = document.getElementById('readerStream');
   stream.innerHTML = '';
   streamLoadedUpTo = 0;
-  readerChapters = [];
-  readerLang = 'ar';
-  document.getElementById('langToggleAr').classList.add('active');
-  document.getElementById('langToggleEn').classList.remove('active');
   appendChapterToStream(n);
   renderRows();
   if(document.getElementById('animeDetailsModal').classList.contains('open')) refreshEpGrid();
   openModal('playerModal');
   document.getElementById('playerModal').scrollTop = 0;
 }
+/* ===== لغة القراءة (عربي/English) — النص الأصلي يُحفظ كما رفعه فريق بيور، والعرض العربي ترجمة تلقائية عبر Google Translate ===== */
+let readerLang = 'ar';
+async function setReaderLang(lang){
+  readerLang = lang;
+  document.querySelectorAll('#readerLangToggle span').forEach(s=>s.classList.toggle('active', s.dataset.l===lang));
+  const paras = document.querySelectorAll('#readerStream .reader-para');
+  for(const p of paras){
+    if(!p.dataset.orig) p.dataset.orig = p.textContent;
+    if(lang==='en'){ p.textContent = p.dataset.orig; }
+    else{
+      if(!p.dataset.ar) p.dataset.ar = await gtranslate(p.dataset.orig, 'ar');
+      p.textContent = p.dataset.ar;
+    }
+  }
+  await translateVisibleComments('epChatBox');
+}
+async function translateVisibleComments(boxId){
+  const box = document.getElementById(boxId); if(!box) return;
+  const texts = box.querySelectorAll('.chat-text');
+  for(const el of texts){
+    if(!el.dataset.orig) el.dataset.orig = el.textContent;
+    if(readerLang==='en'){ el.textContent = el.dataset.orig; }
+    else{
+      if(!el.dataset.ar) el.dataset.ar = await gtranslate(el.dataset.orig, 'ar');
+      el.textContent = el.dataset.ar;
+    }
+  }
+}
+/* جلب فصل حقيقي من Firestore: مانهاوا/{مفتاح العمل}/chapters/{رقم الفصل} */
 async function fetchChapterData(mangaKey, n){
   if(!fbReady) return null;
   try{
@@ -1174,9 +1720,33 @@ async function appendChapterToStream(n){
   if(n>a.eps || streamLoadedUpTo>=n) return;
   streamLoadedUpTo = n;
   const stream = document.getElementById('readerStream');
+  const divider = document.createElement('div');
+  divider.className = 'chap-divider';
+  divider.innerHTML = `<span>دخلت الفصل رقم ${n}</span>`;
+  stream.appendChild(divider);
   const chData = await fetchChapterData(currentAnimeKey, n);
-  readerChapters.push({num:n, chData});
-  await renderChapterBlock(stream, n, chData, a);
+  if(a.type === 'novel'){
+    const p = document.createElement('div');
+    p.className = 'reader-para';
+    p.style.fontSize = novelFontSize+'px';
+    p.textContent = (chData && chData.text) ? chData.text : (NOVEL_SAMPLE + ' ' + NOVEL_SAMPLE);
+    stream.appendChild(p);
+  } else if(chData && Array.isArray(chData.pages) && chData.pages.length){
+    chData.pages.forEach(url=>{
+      const pg = document.createElement('div');
+      pg.className = 'reader-page';
+      pg.innerHTML = `<img src="${url}" loading="lazy" style="width:100%; display:block;">`;
+      stream.appendChild(pg);
+    });
+  } else {
+    const pageCount = 4;
+    for(let i=1;i<=pageCount;i++){
+      const pg = document.createElement('div');
+      pg.className = 'reader-page';
+      pg.innerHTML = `<svg viewBox="0 0 24 24">${IC[a.icon]}</svg>`;
+      stream.appendChild(pg);
+    }
+  }
   if(!watchedEps[currentAnimeKey]) watchedEps[currentAnimeKey]=new Set();
   watchedEps[currentAnimeKey].add(n);
   updateReaderProgress();
@@ -1212,20 +1782,19 @@ function copyShareLink(){
 }
 
 function renderManga(){
-  const list = getMangaList();
-  document.getElementById('mangaList').innerHTML = list.length ? list.map(m=>`
-    <div class="fav-item-card" onclick="openAnimeDetails('${m.key}')"><div class="fav-item-cover">${svgIcon(m.icon)}</div>
+  document.getElementById('mangaList').innerHTML = MANGA.map(m=>`
+    <div class="fav-item-card"><div class="fav-item-cover">${svgIcon(m.icon)}</div>
       <div class="fav-item-details"><div class="fav-item-title">${m.title}</div><div class="fav-item-sub">${m.ch}</div>
       <div class="progress-bar-bg"><div class="progress-bar-fill" style="width:${m.prog}%"></div></div></div>
       <button class="follow-btn on">اقرأ</button>
-    </div>`).join('') : `<div class="empty-state">${svgIcon('sparkle')}<div class="txt">ماكو مانجا مرفوعة بعد</div></div>`;
+    </div>`).join('');
 }
 function renderTeams(){
-  document.getElementById('teamsList').innerHTML = TEAMS.length ? TEAMS.map((t,i)=>`
+  document.getElementById('teamsList').innerHTML = TEAMS.map((t,i)=>`
     <div class="team-card"><div class="team-ic">${svgIcon(t.icon)}</div>
       <div class="team-info"><div class="team-name">${t.name}</div><div class="team-sub">${t.sub}</div></div>
       <button class="follow-btn" id="teamBtn${i}" onclick="toggleTeam(${i})">متابعة</button>
-    </div>`).join('') : `<div class="empty-state">${svgIcon('sparkle')}<div class="txt">ماكو فرق بعد</div></div>`;
+    </div>`).join('');
 }
 function toggleTeam(i){ const btn=document.getElementById('teamBtn'+i); const on=btn.classList.toggle('on'); btn.textContent = on ? 'متابَع' : 'متابعة'; }
 
@@ -1251,7 +1820,7 @@ function liveSearch(){
   if(sort==='rating') keys.sort((a,b)=>ANIME[b].rating-ANIME[a].rating);
   if(sort==='name') keys.sort((a,b)=>ANIME[a].title.localeCompare(ANIME[b].title,'ar'));
   let mangaHtml='', teamHtml='';
-  if(cat==='all' || cat==='manga'){ const mm=getMangaList().filter(m=>m.title.includes(q)); if(mm.length) mangaHtml = mm.map(m=>`<div class="fav-item-card" onclick="openAnimeDetails('${m.key}')"><div class="fav-item-cover">${svgIcon(m.icon)}</div><div class="fav-item-details"><div class="fav-item-title">${m.title}</div><div class="fav-item-sub">${m.ch}</div></div></div>`).join(''); }
+  if(cat==='all' || cat==='manga'){ const mm=MANGA.filter(m=>m.title.includes(q)); if(mm.length) mangaHtml = mm.map(m=>`<div class="fav-item-card"><div class="fav-item-cover">${svgIcon(m.icon)}</div><div class="fav-item-details"><div class="fav-item-title">${m.title}</div><div class="fav-item-sub">${m.ch}</div></div></div>`).join(''); }
   if(cat==='all' || cat==='teams'){ const tt=TEAMS.filter(t=>t.name.includes(q)); if(tt.length) teamHtml = tt.map(t=>`<div class="team-card"><div class="team-ic">${svgIcon(t.icon)}</div><div class="team-info"><div class="team-name">${t.name}</div><div class="team-sub">${t.sub}</div></div></div>`).join(''); }
   const animeHtml = keys.length ? `<div class="grid-cards">${keys.map(renderCard).join('')}</div>` : '';
   const combined = animeHtml + mangaHtml + teamHtml;
@@ -1264,7 +1833,803 @@ document.querySelectorAll('.fav-tabs .fav-tab-btn').forEach(t=>t.addEventListene
 
 const heroTrack = document.getElementById('heroTrack');
 const heroDots = document.getElementById('heroDots');
-const HERO_BG = ['hs1','hs2','hs3'];
-const HERO_BADGES = ['الأكثر مشاهدة','إضافة جديدة','تصدر التقييمات'];
-function renderHero(){
-  const keys = Object.keys(ANIME).sort((a,b)=>view
+const slideCount = document.querySelectorAll('.hero-slide').length;
+for(let i=0;i<slideCount;i++){ const d=document.createElement('div'); d.className='hero-dot'+(i===0?' active':''); heroDots.appendChild(d); }
+function updateDots(){ const idx = Math.round(heroTrack.scrollLeft / heroTrack.clientWidth); [...heroDots.children].forEach((d,i)=>d.classList.toggle('active', i===idx)); }
+heroTrack.addEventListener('scroll', ()=>{ clearTimeout(window._hs); window._hs=setTimeout(updateDots,80); });
+let heroAuto = setInterval(()=>{
+  const max = heroTrack.scrollWidth - heroTrack.clientWidth;
+  let next = heroTrack.scrollLeft + heroTrack.clientWidth;
+  if(next > max + 5) next = 0;
+  heroTrack.scrollTo({left:next, behavior:'smooth'});
+}, 5000);
+heroTrack.addEventListener('touchstart', ()=>clearInterval(heroAuto));
+
+renderIdentityGrid();
+renderThemeGrid();
+setLayout('grid', true);
+renderPresetGrid();
+
+/* ===== Firebase auth: باقي دوال تسجيل الدخول/الخروج (المتغيرات معرّفة بأعلى السكربت) ===== */
+
+function switchAuthTab(mode){
+  authMode = mode;
+  document.querySelectorAll('.auth-tab').forEach(t=>t.classList.toggle('active', t.dataset.a===mode));
+  document.getElementById('authSubmitBtn').textContent = mode==='signin' ? 'تسجيل الدخول' : 'إنشاء الحساب';
+  document.getElementById('authMsg').className = 'auth-msg';
+}
+function showAuthMsg(text, ok){ const el=document.getElementById('authMsg'); el.textContent=text; el.className = 'auth-msg ' + (ok?'ok':'err'); }
+function authErrorMsg(err){
+  const map = {
+    'auth/invalid-email':'صيغة البريد غير صحيحة', 'auth/user-not-found':'ماكو حساب بهذا البريد',
+    'auth/wrong-password':'كلمة المرور غير صحيحة', 'auth/invalid-credential':'بيانات الدخول غير صحيحة',
+    'auth/email-already-in-use':'هذا البريد مستخدم من قبل', 'auth/weak-password':'كلمة المرور لازم تكون ٦ أحرف أو أكثر',
+    'auth/popup-closed-by-user':'تم إغلاق نافذة تسجيل الدخول'
+  };
+  return map[err.code] || err.message || 'صار خطأ، حاول مرة ثانية';
+}
+async function submitAuth(){
+  if(!fbReady){ showAuthMsg('تعذر الاتصال بخادم الحسابات، تحقق من اتصال الإنترنت وحدّث الصفحة'); return; }
+  const email = document.getElementById('authEmail').value.trim();
+  const password = document.getElementById('authPass').value;
+  if(!email || !password){ showAuthMsg('عبّي البريد وكلمة المرور'); return; }
+  const btn = document.getElementById('authSubmitBtn'); const oldTxt=btn.textContent; btn.textContent='...'; btn.disabled=true;
+  try{
+    if(authMode==='signup'){
+      if(SITE_SETTINGS.newRegistrationsDisabled){ showAuthMsg('التسجيل الجديد متوقف مؤقتًا من الإدارة'); btn.textContent=oldTxt; btn.disabled=false; return; }
+      const cred = await window.fb.createUserWithEmailAndPassword(window.fbAuth, email, password);
+      onAuthSuccess(cred.user);
+    } else {
+      const cred = await window.fb.signInWithEmailAndPassword(window.fbAuth, email, password);
+      onAuthSuccess(cred.user);
+    }
+  }catch(err){
+    showAuthMsg(authErrorMsg(err));
+  }
+  btn.textContent = oldTxt; btn.disabled=false;
+}
+function onAuthSuccess(user){
+  currentUser = normalizeUser(user);
+  updateAuthUI();
+  closeModal('authModal');
+  if(fbReady){
+    window.fb.addDoc(window.fb.collection(window.fbDb,'login_logs'), {
+      uid: currentUser.id, email: currentUser.email, loginAt: window.fb.serverTimestamp(),
+      device: navigator.userAgent.slice(0,180)
+    }).catch(console.error);
+  }
+}
+async function doSignOut(){
+  try{
+    if(fbReady) await window.fb.signOut(window.fbAuth);
+  }catch(e){ console.error('تعذر تسجيل الخروج:', e); }
+  currentUser = null;
+  updateAuthUI();
+  resetProfileUI();
+  closeModal('accountModal'); closeDrawer();
+}
+function resetProfileUI(){
+  const banner = document.getElementById('bannerImg'); if(banner){ banner.src=''; banner.style.display='none'; }
+  const avatar = document.getElementById('avatarImg'); if(avatar){ avatar.src=''; avatar.style.display='none'; }
+  const icon = document.getElementById('avatarPlaceholderIcon'); if(icon) icon.style.display='block';
+  const nm = document.getElementById('accNameText'); if(nm) nm.textContent = 'عضو';
+  const rl = document.getElementById('accRoleText'); if(rl) rl.textContent = '—';
+  const dn = document.getElementById('drawerAvatarImg'); if(dn){ dn.style.display='none'; dn.src=''; }
+  const di = document.getElementById('drawerAvatarIcon'); if(di) di.style.display='block';
+  ['statEpisodes','statHours','statFav'].forEach(id=>{ const el=document.getElementById(id); if(el) el.textContent='0'; });
+  const coverBox = document.getElementById('accCoverBox'); if(coverBox) coverBox.parentElement.classList.remove('is-admin');
+  const adminBtn = document.getElementById('adminEntryBtn'); if(adminBtn) adminBtn.style.display='none';
+  userPoints = 0;
+  lastRead = {};
+  const pointsEl = document.getElementById('pointsNum'); if(pointsEl) pointsEl.textContent = '0';
+}
+function updateAuthUI(){
+  const nameEl = document.getElementById('drawerUserName'), roleEl = document.getElementById('drawerUserRole');
+  if(!nameEl || !roleEl) return;
+  if(currentUser){
+    nameEl.textContent = currentUser.displayName || 'عضو';
+    roleEl.textContent = 'عرض الحساب';
+  } else {
+    nameEl.textContent = 'زائر'; roleEl.textContent = 'اضغط لتسجيل الدخول';
+    const img=document.getElementById('drawerAvatarImg'), icon=document.getElementById('drawerAvatarIcon');
+    if(img){ img.style.display='none'; img.src=''; } if(icon) icon.style.display='block';
+  }
+}
+
+/* ===== OAuth ===== */
+async function oauthSignIn(provider){
+  if(!fbReady){ showAuthMsg('تعذر الاتصال بالخادم'); return; }
+  const map = { google:'google', facebook:'facebook', github:'github' };
+  const p = window.fbProviders[map[provider]];
+  if(!p){ showAuthMsg('هذا المزوّد غير مفعّل'); return; }
+  try{
+    const cred = await window.fb.signInWithPopup(window.fbAuth, p);
+    onAuthSuccess(cred.user);
+  }catch(err){
+    showAuthMsg(authErrorMsg(err));
+  }
+}
+
+/* ===== إعدادات الموقع العامة (Firestore: settings/site) — تشمل روابط مواقعك الأخرى وخيارات تشغيل عامة ===== */
+let SITE_SETTINGS = {
+  maintenanceMode:false, blockGuestComments:false, commentsLocked:false, newRegistrationsDisabled:false, autoApproveSubmissions:false,
+  siteLinks:['', '', '', '', '', '']
+};
+async function loadSiteSettings(){
+  if(!fbReady) return;
+  try{
+    const snap = await window.fb.getDoc(window.fb.doc(window.fbDb,'settings','site'));
+    if(snap.exists()) SITE_SETTINGS = {...SITE_SETTINGS, ...snap.data()};
+  }catch(e){ console.error('تعذر تحميل إعدادات الموقع:', e); }
+  applyMaintenanceMode();
+}
+async function saveSiteSettings(){
+  SITE_SETTINGS.maintenanceMode = document.getElementById('setMaintenance').checked;
+  SITE_SETTINGS.blockGuestComments = document.getElementById('setBlockGuest').checked;
+  SITE_SETTINGS.commentsLocked = document.getElementById('setCommentsLocked').checked;
+  SITE_SETTINGS.newRegistrationsDisabled = document.getElementById('setRegDisabled').checked;
+  SITE_SETTINGS.autoApproveSubmissions = document.getElementById('setAutoApprove').checked;
+  SITE_SETTINGS.siteLinks = [0,1,2,3,4,5].map(i=>document.getElementById('siteLink'+i).value.trim());
+  try{
+    await window.fb.setDoc(window.fb.doc(window.fbDb,'settings','site'), SITE_SETTINGS, {merge:true});
+    document.getElementById('siteSettingsMsg').className='auth-msg ok'; document.getElementById('siteSettingsMsg').textContent='تم الحفظ';
+    applyMaintenanceMode();
+  }catch(e){ document.getElementById('siteSettingsMsg').className='auth-msg err'; document.getElementById('siteSettingsMsg').textContent='تعذر الحفظ'; console.error(e); }
+}
+function applyMaintenanceMode(){
+  let box = document.getElementById('maintenanceOverlay');
+  const show = SITE_SETTINGS.maintenanceMode && !isAdmin();
+  if(show && !box){
+    box = document.createElement('div');
+    box.id='maintenanceOverlay';
+    box.style.cssText='position:fixed;inset:0;z-index:99999;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;text-align:center;padding:24px;';
+    box.innerHTML = `<div style="font-size:15px;font-weight:800;">الموقع تحت الصيانة حاليًا</div><div style="font-size:12px;color:var(--text-dim);">راجعنا بعد قليل — نشتغل على تحسين التجربة</div>`;
+    document.body.appendChild(box);
+  } else if(!show && box){ box.remove(); }
+}
+/* ===== Admin: نظام صلاحيات متعدد المستويات — مشكلة 9 =====
+   1 = مشرف (بلاغات وتعليقات وحظر أعضاء)
+   2 = محرر محتوى (كل صلاحيات المشرف + طلبات الأعمال والفصول)
+   3 = مدير عام (كل الصلاحيات + إدارة الإداريين أنفسهم) */
+const ADMIN_EMAIL = "sksnsjsj8@gmail.com"; // المالك الأساسي — ثابت بالكود، ما ينحذف من الواجهة
+const ADMIN_LEVEL_LABELS = {1:'مشرف', 2:'محرر محتوى', 3:'مدير عام'};
+let adminRoles = {}; // { email: level }
+let adminRolesLoaded = false;
+let pureTeamEmails = {}; // { email: true } — رتبة "تيم بيور" لرفع المحتوى مباشرة
+function isPureTeam(){ return !!(currentUser && (pureTeamEmails[currentUser.email] || isAdmin())); }
+async function loadPureTeam(){
+  if(!fbReady) return;
+  try{
+    const {collection, getDocs} = window.fb;
+    const snap = await getDocs(collection(window.fbDb,'pure_team'));
+    pureTeamEmails = {};
+    snap.docs.forEach(d=>{ pureTeamEmails[d.id] = true; });
+  }catch(e){ console.error('تعذر تحميل قائمة تيم بيور:', e); }
+  const btn = document.getElementById('uploadEntryBtn'); if(btn) btn.style.display = isPureTeam() ? 'flex' : 'none';
+}
+async function addPureTeamMember(){
+  if(getAdminLevel() < 3){ alert('يحتاج صلاحية مدير عام'); return; }
+  const email = document.getElementById('newTeamEmail').value.trim();
+  if(!email) return;
+  try{ await window.fb.setDoc(window.fb.doc(window.fbDb,'pure_team',email), {email, addedBy:currentUser.email, addedAt:window.fb.serverTimestamp()}); document.getElementById('newTeamEmail').value=''; loadPureTeam(); loadPureTeamList(); }
+  catch(e){ alert('تعذر الإضافة: '+e.message); }
+}
+async function removePureTeamMember(email){
+  if(getAdminLevel() < 3) return;
+  try{ await window.fb.deleteDoc(window.fb.doc(window.fbDb,'pure_team',email)); loadPureTeam(); loadPureTeamList(); }
+  catch(e){ alert('تعذر الحذف: '+e.message); }
+}
+function loadPureTeamList(){
+  const box = document.getElementById('pureTeamList'); if(!box) return;
+  box.innerHTML = Object.keys(pureTeamEmails).map(email=>`
+    <div class="sub-card"><div class="sub-title">${email}</div>
+    <div class="sub-actions"><button class="sub-btn reject" onclick="removePureTeamMember('${email}')">إزالة</button></div></div>
+  `).join('') || `<div class="empty-state" style="padding:16px;">${svgIcon('sparkle')}<div class="txt">ماكو أعضاء بتيم بيور بعد</div></div>`;
+}
+async function loadAdminRoles(){
+  if(!fbReady) return;
+  try{
+    const {collection, getDocs} = window.fb;
+    const snap = await getDocs(collection(window.fbDb,'admins'));
+    adminRoles = {};
+    snap.docs.forEach(d=>{ const data=d.data(); if(data.email) adminRoles[data.email] = data.level||1; });
+  }catch(e){ console.error('تعذر تحميل قائمة الإداريين:', e); }
+  adminRolesLoaded = true;
+  updateAdminUI();
+}
+function getAdminLevel(){
+  if(!currentUser) return 0;
+  if(currentUser.email === ADMIN_EMAIL) return 3;
+  return adminRoles[currentUser.email] || 0;
+}
+function isAdmin(){ return getAdminLevel() > 0; }
+function updateAdminUI(){
+  const admin = isAdmin();
+  document.getElementById('adminEntryBtn').style.display = admin ? 'flex' : 'none';
+  const coverBox = document.getElementById('accCoverBox');
+  if(coverBox) coverBox.parentElement.classList.toggle('is-admin', admin);
+  const roleEl = document.getElementById('accRoleText');
+  if(roleEl){
+    const lvl = getAdminLevel();
+    roleEl.innerHTML = admin ? `<span class="admin-badge"><svg viewBox="0 0 24 24"><path d="M12 3l7 3v6c0 5-3 8-7 9-4-1-7-4-7-9V6l7-3z"/></svg>${ADMIN_LEVEL_LABELS[lvl]||'حساب إداري'}</span>` : 'عضو';
+  }
+  document.querySelectorAll('.admin-tab[data-needs-level]').forEach(t=>{
+    t.style.display = (getAdminLevel() >= +t.dataset.needsLevel) ? '' : 'none';
+  });
+}
+/* ===== إنفاذ الحظر: يمنع أي عضو محظور من التفاعل (تعليقات) ويسجّل خروجه تلقائيًا ===== */
+let currentUserBanned = false;
+function checkNotBanned(){
+  if(currentUserBanned){ alert('تم إيقاف حسابك من التفاعل بسبب مخالفة قوانين المجتمع.'); return false; }
+  return true;
+}
+
+/* ===== profile: banner + name/username (Firestore: collection "profiles", doc id = uid) ===== */
+function onBannerPick(ev){
+  const file = ev.target.files[0]; if(!file) return;
+  const reader = new FileReader();
+  reader.onload = e=>{
+    const img = document.getElementById('bannerImg');
+    img.src = e.target.result; img.style.display='block';
+    if(currentUser && fbReady){
+      window.fb.setDoc(window.fb.doc(window.fbDb,'profiles',currentUser.id), {banner_url:e.target.result}, {merge:true}).catch(console.error);
+    }
+  };
+  reader.readAsDataURL(file);
+}
+function onAvatarPick(ev){
+  const file = ev.target.files[0]; if(!file) return;
+  const reader = new FileReader();
+  reader.onload = e=>{
+    const img = document.getElementById('avatarImg'); const icon = document.getElementById('avatarPlaceholderIcon');
+    img.src = e.target.result; img.style.display='block'; if(icon) icon.style.display='none';
+    myAvatarUrl = e.target.result;
+    if(currentUser && fbReady){
+      window.fb.setDoc(window.fb.doc(window.fbDb,'profiles',currentUser.id), {avatar_url:e.target.result}, {merge:true}).catch(console.error);
+    }
+  };
+  reader.readAsDataURL(file);
+}
+async function loadMyProfile(){
+  if(!fbReady || !currentUser) return;
+  try{
+    const snap = await window.fb.getDoc(window.fb.doc(window.fbDb,'profiles',currentUser.id));
+    if(snap.exists()){
+      const data = snap.data();
+      if(data.banner_url){ const img=document.getElementById('bannerImg'); img.src=data.banner_url; img.style.display='block'; }
+      if(data.avatar_url){
+        const img=document.getElementById('avatarImg'); const icon=document.getElementById('avatarPlaceholderIcon'); img.src=data.avatar_url; img.style.display='block'; if(icon) icon.style.display='none'; myAvatarUrl=data.avatar_url;
+        const dImg=document.getElementById('drawerAvatarImg'), dIcon=document.getElementById('drawerAvatarIcon');
+        if(dImg){ dImg.src=data.avatar_url; dImg.style.display='block'; } if(dIcon) dIcon.style.display='none';
+      }
+      if(data.last_read) lastRead = data.last_read;
+      if(data.equipped) equippedItems = {...equippedItems, ...data.equipped};
+      if(data.theme && THEMES[data.theme]) applyTheme(data.theme, true);
+      if(data.layout) setLayout(data.layout, true);
+      const finalName = data.display_name || currentUser.email.split('@')[0];
+      document.getElementById('accNameText').textContent = finalName;
+      document.getElementById('drawerUserName').textContent = finalName;
+      currentUser.displayName = finalName;
+      const editNameEl = document.getElementById('editName'), editUserEl = document.getElementById('editUsername');
+      if(editNameEl) editNameEl.value = finalName;
+      if(editUserEl) editUserEl.value = data.username ? ('@'+data.username.replace(/^@/,'')) : ('@'+currentUser.email.split('@')[0]);
+      userPoints = data.points || (computeWatchedTotal()*10);
+      currentUserBanned = !!data.banned;
+      if(currentUserBanned){
+        alert('تم إيقاف هذا الحساب من قبل الإدارة. سيتم تسجيل خروجك.');
+        await doSignOut();
+        return;
+      }
+      if(!data.email) window.fb.setDoc(window.fb.doc(window.fbDb,'profiles',currentUser.id), {email:currentUser.email}, {merge:true}).catch(console.error);
+    } else {
+      const defaults = { username: currentUser.email.split('@')[0], display_name: currentUser.displayName || currentUser.email.split('@')[0], email: currentUser.email, points: computeWatchedTotal()*10 };
+      await window.fb.setDoc(window.fb.doc(window.fbDb,'profiles',currentUser.id), defaults);
+      userPoints = defaults.points;
+      currentUserBanned = false;
+    }
+  }catch(e){ console.error(e); }
+  updateAdminUI();
+  applyEquippedDecorations();
+  document.getElementById('pointsNum').textContent = isAdmin() ? '∞' : userPoints;
+}
+async function saveProfile(){
+  const name = document.getElementById('editName').value.trim();
+  const uname = document.getElementById('editUsername').value.trim().replace(/^@/,'');
+  document.getElementById('accNameText').textContent = name || 'عضو';
+  document.getElementById('drawerUserName').textContent = name || 'عضو';
+  if(currentUser) currentUser.displayName = name;
+  const msg = document.getElementById('editSaveMsg');
+  if(!currentUser || !fbReady){ msg.className='auth-msg err'; msg.textContent='سجّل الدخول أول عشان يحفظ فعليًا'; return; }
+  try{
+    await window.fb.setDoc(window.fb.doc(window.fbDb,'profiles',currentUser.id), {display_name:name, username:uname}, {merge:true});
+    msg.className = 'auth-msg ok'; msg.textContent = 'تم الحفظ بنجاح';
+  }catch(error){
+    msg.className = 'auth-msg err'; msg.textContent = error.message;
+  }
+}
+function computeWatchedTotal(){ let n=0; Object.values(watchedEps).forEach(s=>n+=s.size); return n; }
+
+/* ===== store: 170 procedurally generated cosmetic items ===== */
+let userPoints = 0;
+const ownedItems = new Set();
+let equippedItems = {frame:null, title:null, nameColor:null, bannerFx:null, badge:null};
+const STORE_CATS = [
+  {id:'frame', name:'إطارات الصورة', icon:'shield'},
+  {id:'title', name:'ألقاب مميزة', icon:'crown'},
+  {id:'nameColor', name:'ألوان الاسم', icon:'sparkle'},
+  {id:'bannerFx', name:'تأثيرات البنر', icon:'wave'},
+  {id:'badge', name:'شارات خاصة', icon:'trending'}
+];
+const STORE_COLORS = ['#ff7a45','#4fd1c5','#ffc247','#ef5164','#b79cf0','#8fb4e8','#ff9ec4','#20c997','#ffd76a','#7ecbe0','#e2586a','#3d7bfd','#a8e6cf','#ffb347','#c99bff','#5fd4a8'];
+let STORE_ITEMS = [];
+function buildStoreItems(){
+  STORE_ITEMS = [];
+  let id=0;
+  STORE_CATS.forEach(cat=>{
+    for(let i=0;i<34;i++){
+      id++;
+      const color = STORE_COLORS[i % STORE_COLORS.length];
+      const price = 50 + (i*15) + (STORE_CATS.indexOf(cat)*40);
+      STORE_ITEMS.push({id:'item_'+id, cat:cat.id, icon:cat.icon, color, price, name: cat.name + ' #' + (i+1)});
+    }
+  });
+}
+buildStoreItems();
+function renderStoreCats(){
+  document.getElementById('storeCats').innerHTML = ['all'].concat(STORE_CATS.map(c=>c.id)).map(c=>{
+    const label = c==='all' ? 'الكل' : STORE_CATS.find(x=>x.id===c).name;
+    return `<span class="search-chip ${c==='all'?'active':''}" data-cat="${c}" onclick="filterStore('${c}')">${label}</span>`;
+  }).join('');
+}
+function filterStore(cat){
+  document.querySelectorAll('#storeCats .search-chip').forEach(c=>c.classList.toggle('active', c.dataset.cat===cat));
+  renderStoreGrid(cat);
+}
+function renderStoreGrid(cat){
+  cat = cat || 'all';
+  const items = cat==='all' ? STORE_ITEMS : STORE_ITEMS.filter(i=>i.cat===cat);
+  const admin = isAdmin();
+  document.getElementById('storeGrid').innerHTML = items.map(it=>{
+    const owned = ownedItems.has(it.id) || admin;
+    const isEquipped = equippedItems[it.cat] === it.id;
+    let label, cls;
+    if(!owned){ label = it.price+' نقطة'; cls=''; }
+    else if(isEquipped){ label = 'مجهّز ✓'; cls='equipped'; }
+    else { label = admin ? 'تجهيز (إداري)' : 'تجهيز'; cls='owned'; }
+    return `<div class="store-item">
+      <div class="icwrap" style="background:${it.color}22; border:1px solid ${it.color}55;">${svgIcon(it.icon).replace('<svg ','<svg style="stroke:'+it.color+'" ')}</div>
+      <div class="nm">${it.name}</div>
+      <button class="buy ${cls}" onclick="${owned?`equipItem('${it.id}','${it.cat}')`:`buyItem('${it.id}', ${it.price})`}">${label}</button>
+    </div>`;
+  }).join('');
+}
+function equipItem(id, cat){
+  equippedItems[cat] = (equippedItems[cat]===id) ? null : id; // كبسة ثانية = فك التجهيز
+  applyEquippedDecorations();
+  if(currentUser && fbReady){
+    window.fb.setDoc(window.fb.doc(window.fbDb,'profiles',currentUser.id), {equipped:equippedItems}, {merge:true}).catch(console.error);
+  }
+  renderStoreGrid(currentStoreCat);
+}
+function applyEquippedDecorations(){
+  const avatarWrap = document.querySelector('.acc-avatar-wrap');
+  const nameEl = document.getElementById('accNameText');
+  const coverBox = document.getElementById('accCoverBox');
+  if(!avatarWrap || !nameEl) return;
+  const frameIt = STORE_ITEMS.find(i=>i.id===equippedItems.frame);
+  avatarWrap.style.borderColor = frameIt ? frameIt.color : '';
+  avatarWrap.style.boxShadow = frameIt ? `0 0 0 3px ${frameIt.color}44` : '';
+  const colorIt = STORE_ITEMS.find(i=>i.id===equippedItems.nameColor);
+  nameEl.style.color = colorIt ? colorIt.color : '';
+  const badgeIt = STORE_ITEMS.find(i=>i.id===equippedItems.badge);
+  let badgeEl = document.getElementById('accNameBadge');
+  if(badgeIt){
+    if(!badgeEl){ badgeEl = document.createElement('span'); badgeEl.id='accNameBadge'; badgeEl.style.cssText='display:inline-flex;width:14px;height:14px;margin-inline-start:6px;vertical-align:middle;'; nameEl.appendChild(badgeEl); }
+    badgeEl.innerHTML = svgIcon(badgeIt.icon).replace('<svg ','<svg style="stroke:'+badgeIt.color+';fill:'+badgeIt.color+'" ');
+  } else if(badgeEl){ badgeEl.remove(); }
+  const titleIt = STORE_ITEMS.find(i=>i.id===equippedItems.title);
+  const roleEl = document.getElementById('accRoleText');
+  if(roleEl && !isAdmin()){
+    roleEl.textContent = titleIt ? titleIt.name : 'عضو';
+  }
+  if(coverBox){
+    const fxIt = STORE_ITEMS.find(i=>i.id===equippedItems.bannerFx);
+    coverBox.style.boxShadow = fxIt ? `inset 0 0 40px ${fxIt.color}55` : '';
+  }
+}
+function buyItem(id, price){
+  if(isAdmin()){ ownedItems.add(id); renderStoreGrid(currentStoreCat); return; }
+  if(userPoints < price){ alert('نقاطك ما تكفي — شاهد المزيد من الحلقات لتجمع نقاط'); return; }
+  userPoints -= price; ownedItems.add(id);
+  document.getElementById('pointsNum').textContent = userPoints;
+  if(currentUser && fbReady){
+    window.fb.addDoc(window.fb.collection(window.fbDb,'user_items'), {user_id: currentUser.id, item_id:id, created_at: window.fb.serverTimestamp()}).catch(console.error);
+    window.fb.setDoc(window.fb.doc(window.fbDb,'profiles',currentUser.id), {points:userPoints}, {merge:true}).catch(console.error);
+  }
+  renderStoreGrid(currentStoreCat);
+}
+let currentStoreCat = 'all';
+
+/* ===== teams ===== */
+let myTeams = [];
+async function loadTeamPanel(){
+  const box = document.getElementById('teamsList');
+  if(!currentUser || !fbReady){ box.innerHTML = `<div class="empty-state">${svgIcon('shield')}<div class="txt">سجّل الدخول عشان تنشئ أو تنضم لفريق</div></div>`; return; }
+  const {collection, query, where, limit, getDocs, doc, getDoc} = window.fb; const db = window.fbDb;
+  const ownedSnap = await getDocs(query(collection(db,'teams'), where('owner','==',currentUser.id)));
+  const owned = ownedSnap.docs.map(d=>({id:d.id, ...d.data()}));
+  const memberSnap = await getDocs(query(collection(db,'team_members'), where('user_id','==',currentUser.id)));
+  const memberTeamDocs = await Promise.all(memberSnap.docs.map(async m=>{
+    const tId = m.data().team_id; const tSnap = await getDoc(doc(db,'teams',tId));
+    return tSnap.exists() ? {id:tSnap.id, ...tSnap.data()} : null;
+  }));
+  const allSnap = await getDocs(query(collection(db,'teams'), limit(20)));
+  const allTeams = allSnap.docs.map(d=>({id:d.id, ...d.data()}));
+  let html = `<div class="form-group"><label>اسم الفريق الجديد</label><input class="form-input" id="newTeamName" placeholder="مثال: فريق الفانوس"></div>
+  <div class="form-group"><label>وصف مختصر</label><input class="form-input" id="newTeamDesc"></div>
+  <button class="watch-btn" onclick="createTeam()">إنشاء فريق</button>
+  <div id="teamCreateMsg" class="auth-msg"></div>
+  <div class="drawer-section-title">فرقي</div>`;
+  const mine = [...owned, ...memberTeamDocs].filter(Boolean);
+  html += mine.length ? mine.map(t=>`<div class="team-card" onclick="openTeamRoom('${t.id}','${(t.name||'').replace(/'/g,"")}','${(t.description||'').replace(/'/g,"")}')"><div class="team-ic">${svgIcon('shield')}</div><div class="team-info"><div class="team-name">${t.name}</div><div class="team-sub">${t.description||''}</div></div></div>`).join('') : `<div class="empty-state" style="padding:20px;">${svgIcon('sparkle')}<div class="txt">ماكو فرق لك بعد</div></div>`;
+  html += `<div class="drawer-section-title">فرق يمكن الانضمام لها</div>`;
+  html += allTeams.filter(t=>!mine.find(m=>m.id===t.id)).map(t=>`<div class="team-card"><div class="team-ic">${svgIcon('shield')}</div><div class="team-info"><div class="team-name">${t.name}</div><div class="team-sub">${t.description||''}</div></div><button class="follow-btn" onclick="joinTeam('${t.id}')">انضمام</button></div>`).join('') || '';
+  box.innerHTML = html;
+}
+async function createTeam(){
+  const name = document.getElementById('newTeamName').value.trim();
+  const desc = document.getElementById('newTeamDesc').value.trim();
+  const msg = document.getElementById('teamCreateMsg');
+  if(!name){ msg.className='auth-msg err'; msg.textContent='اكتب اسم الفريق'; return; }
+  try{
+    const {collection, addDoc, serverTimestamp} = window.fb; const db = window.fbDb;
+    const teamRef = await addDoc(collection(db,'teams'), {name, description:desc, owner:currentUser.id, created_at:serverTimestamp()});
+    await addDoc(collection(db,'team_members'), {team_id:teamRef.id, user_id:currentUser.id});
+    msg.className='auth-msg ok'; msg.textContent='تم إنشاء الفريق!';
+    loadTeamPanel();
+  }catch(error){ msg.className='auth-msg err'; msg.textContent=error.message; }
+}
+async function joinTeam(id){
+  try{
+    await window.fb.addDoc(window.fb.collection(window.fbDb,'team_members'), {team_id:id, user_id:currentUser.id});
+    loadTeamPanel();
+  }catch(error){ alert(error.message); }
+}
+let currentTeamId = null;
+async function openTeamRoom(id, name, desc){
+  currentTeamId = id;
+  document.getElementById('teamRoomName').textContent = name;
+  document.getElementById('teamRoomDesc').textContent = desc || 'ماكو وصف بعد';
+  const {collection, query, where, getDocs} = window.fb; const db = window.fbDb;
+  const memberSnap = await getDocs(query(collection(db,'team_members'), where('team_id','==',id)));
+  const subsSnap = await getDocs(query(collection(db,'submissions'), where('team_id','==',id)));
+  const subs = subsSnap.docs.map(d=>({id:d.id, ...d.data()}));
+  const published = subs.filter(s=>s.status==='approved').length;
+  const pending = subs.filter(s=>s.status==='pending').length;
+  document.getElementById('teamMemberCount').textContent = memberSnap.size||0;
+  document.getElementById('teamPublishedCount').textContent = published;
+  document.getElementById('teamPendingCount').textContent = pending;
+  document.getElementById('teamSubsList').innerHTML = subs.map(s=>`<div class="sub-card"><div class="sub-head"><div class="sub-title">${s.title}</div><span class="tag-gold">${s.status==='approved'?'منشور':s.status==='pending'?'قيد المراجعة':'مرفوض'}</span></div><div class="sub-meta">${s.type==='anime'?'أنمي':'مانجا'} · ${s.genre||''}</div></div>`).join('') || `<div class="empty-state" style="padding:20px;">${svgIcon('sparkle')}<div class="txt">ماكو إصدارات بعد</div></div>`;
+  openModal('teamRoomModal');
+}
+let submitType = 'anime';
+function openSubmitForm(type){
+  submitType = type;
+  document.getElementById('submitFormTitle').textContent = type==='anime' ? 'إرسال أنمي جديد' : 'إرسال مانجا جديدة';
+  document.getElementById('subTitle').value=''; document.getElementById('subGenre').value=''; document.getElementById('subDesc').value='';
+  document.getElementById('submitMsg').className='auth-msg';
+  openModal('submitFormModal');
+}
+async function sendSubmission(){
+  const title = document.getElementById('subTitle').value.trim();
+  const genre = document.getElementById('subGenre').value.trim();
+  const desc = document.getElementById('subDesc').value.trim();
+  const msg = document.getElementById('submitMsg');
+  if(!title){ msg.className='auth-msg err'; msg.textContent='اكتب العنوان'; return; }
+  try{
+    const status = SITE_SETTINGS.autoApproveSubmissions ? 'approved' : 'pending';
+    await window.fb.addDoc(window.fb.collection(window.fbDb,'submissions'), {type:submitType, title, genre, description:desc, team_id:currentTeamId, submitted_by:currentUser.id, status, created_at:window.fb.serverTimestamp()});
+    msg.className = 'auth-msg ok'; msg.textContent = status==='approved' ? 'تم الإرسال والقبول تلقائيًا!' : 'تم الإرسال! بانتظار موافقة الإدارة';
+    setTimeout(()=>{ closeModal('submitFormModal'); openTeamRoom(currentTeamId, document.getElementById('teamRoomName').textContent, document.getElementById('teamRoomDesc').textContent); }, 1200);
+  }catch(error){
+    msg.className = 'auth-msg err'; msg.textContent = error.message;
+  }
+}
+
+/* ===== admin panel logic ===== */
+function switchAdminTab(tab){
+  document.querySelectorAll('.admin-tab').forEach(t=>t.classList.toggle('active', t.dataset.at===tab));
+  document.querySelectorAll('.admin-panel2').forEach(p=>p.classList.toggle('active', p.dataset.ap===tab));
+  if(tab==='subs') loadAdminSubs();
+  if(tab==='reports') loadAdminReports();
+  if(tab==='ban') loadBannedList();
+  if(tab==='admins') loadAdminsList();
+  if(tab==='pureteam') loadPureTeamList();
+  if(tab==='logins') loadLoginLogs();
+  if(tab==='deletecontent') loadDeleteContentList();
+  if(tab==='tools') fillSiteSettingsForm();
+}
+async function loadAdminSubs(){
+  if(!isAdmin()) return;
+  const {collection, query, where, getDocs} = window.fb;
+  const snap = await getDocs(query(collection(window.fbDb,'submissions'), where('status','==','pending')));
+  const data = snap.docs.map(d=>({id:d.id, ...d.data()}));
+  document.getElementById('adminSubsList').innerHTML = data.map(s=>`
+    <div class="sub-card"><div class="sub-head"><div class="sub-title">${s.title}</div></div>
+    <div class="sub-meta">${s.type==='anime'?'أنمي':'مانجا'} · ${s.genre||''} · ${s.description||''}</div>
+    <div class="sub-actions"><button class="sub-btn approve" onclick="reviewSub('${s.id}','approved')">قبول</button><button class="sub-btn reject" onclick="reviewSub('${s.id}','rejected')">رفض</button></div></div>
+  `).join('') || `<div class="empty-state" style="padding:20px;">${svgIcon('sparkle')}<div class="txt">ماكو طلبات معلّقة</div></div>`;
+}
+async function reviewSub(id, status){
+  if(getAdminLevel() < 2){ alert('يحتاج صلاحية محرر محتوى فما فوق'); return; }
+  try{
+    await window.fb.updateDoc(window.fb.doc(window.fbDb,'submissions',id), {status});
+    loadAdminSubs();
+  }catch(error){ alert(error.message); }
+}
+async function loadAdminReports(){
+  if(!isAdmin()) return;
+  const {collection, query, where, getDocs} = window.fb;
+  const snap = await getDocs(query(collection(window.fbDb,'reports'), where('status','==','open')));
+  const data = snap.docs.map(d=>({id:d.id, ...d.data()}));
+  const typeLbl = {comment:'تعليق', chapter:'فصل', manga:'عمل', member:'عضو'};
+  document.getElementById('adminReportsList').innerHTML = data.map(r=>{
+    let actions = `<button class="sub-btn resolve" onclick="resolveReport('${r.id}')">إغلاق البلاغ</button>`;
+    if(r.type==='comment' && r.targetId) actions += `<button class="sub-btn reject" onclick="adminDeleteComment('${r.targetId}','${r.id}')">حذف التعليق</button>`;
+    if((r.type==='member' && r.targetId) || (r.type==='comment' && r.authorUid)){
+      const uid = r.type==='member' ? r.targetId : r.authorUid;
+      actions += `<button class="sub-btn reject" onclick="banUserByUid('${uid}')">حظر العضو</button>`;
+    }
+    if(r.type==='chapter' && r.mangaKey && (r.chapterNum!==undefined && r.chapterNum!==null) && getAdminLevel()>=2){
+      actions += `<button class="sub-btn reject" onclick="adminDeleteChapter('${r.mangaKey}',${r.chapterNum},'${r.id}')">حذف الفصل</button>`;
+    }
+    return `<div class="sub-card"><div class="sub-title">بلاغ ${typeLbl[r.type]||''} — ${(r.targetLabel||'').toString().slice(0,60)}</div>
+    <div class="sub-meta">السبب: ${r.reason||'بدون سبب مذكور'} ${r.reporterEmail?('· من: '+r.reporterEmail):''}</div>
+    <div class="sub-actions">${actions}</div></div>`;
+  }).join('') || `<div class="empty-state" style="padding:20px;">${svgIcon('sparkle')}<div class="txt">ماكو بلاغات مفتوحة</div></div>`;
+}
+async function resolveReport(id){
+  try{ await window.fb.updateDoc(window.fb.doc(window.fbDb,'reports',id), {status:'resolved'}); loadAdminReports(); }
+  catch(error){ alert(error.message); }
+}
+async function adminDeleteComment(commentId, reportId){
+  if(!confirm('حذف هذا التعليق نهائيًا؟')) return;
+  try{
+    await window.fb.deleteDoc(window.fb.doc(window.fbDb,'comments',commentId));
+    if(reportId) await window.fb.updateDoc(window.fb.doc(window.fbDb,'reports',reportId), {status:'resolved'});
+    alert('تم حذف التعليق'); loadAdminReports();
+  }catch(e){ alert('تعذر الحذف: '+e.message); }
+}
+async function adminDeleteChapter(mangaKey, n, reportId){
+  if(!confirm(`حذف الفصل ${n} نهائيًا؟`)) return;
+  try{
+    await window.fb.deleteDoc(window.fb.doc(window.fbDb,'mangas',mangaKey,'chapters',String(n)));
+    if(reportId) await window.fb.updateDoc(window.fb.doc(window.fbDb,'reports',reportId), {status:'resolved'});
+    alert('تم حذف الفصل'); loadAdminReports();
+  }catch(e){ alert('تعذر الحذف: '+e.message); }
+}
+/* ===== حظر/إيقاف الأعضاء — Firestore-based، يمنع التفاعل داخل التطبيق فورًا ===== */
+async function findProfileByEmail(email){
+  const {collection, query, where, getDocs} = window.fb;
+  const snap = await getDocs(query(collection(window.fbDb,'profiles'), where('email','==',email)));
+  return snap.docs[0] || null;
+}
+async function banUserByEmail(){
+  const email = document.getElementById('banEmailInput').value.trim();
+  if(!email){ alert('اكتب بريد العضو'); return; }
+  if(email===ADMIN_EMAIL){ alert('ما تكدر توقف حساب المالك'); return; }
+  try{
+    const doc1 = await findProfileByEmail(email);
+    if(!doc1){ alert('ماكو عضو بهذا البريد بعد (لازم يكون سجّل دخول مرة وحدة على الأقل)'); return; }
+    await window.fb.updateDoc(window.fb.doc(window.fbDb,'profiles',doc1.id), {banned:true, banned_at:window.fb.serverTimestamp()});
+    alert('تم إيقاف العضو'); loadBannedList();
+  }catch(e){ alert('صار خطأ: '+e.message); }
+}
+async function unbanUserByEmail(){
+  const email = document.getElementById('banEmailInput').value.trim();
+  if(!email){ alert('اكتب بريد العضو'); return; }
+  try{
+    const doc1 = await findProfileByEmail(email);
+    if(!doc1){ alert('ماكو عضو بهذا البريد'); return; }
+    await window.fb.updateDoc(window.fb.doc(window.fbDb,'profiles',doc1.id), {banned:false});
+    alert('تم رفع الإيقاف'); loadBannedList();
+  }catch(e){ alert('صار خطأ: '+e.message); }
+}
+async function banUserByUid(uid){
+  if(!uid) return;
+  if(!confirm('حظر هذا العضو من التفاعل؟')) return;
+  try{
+    await window.fb.setDoc(window.fb.doc(window.fbDb,'profiles',uid), {banned:true, banned_at:window.fb.serverTimestamp()}, {merge:true});
+    alert('تم حظر العضو');
+  }catch(e){ alert('تعذر الحظر: '+e.message); }
+}
+async function loadBannedList(){
+  if(!isAdmin()) return;
+  try{
+    const {collection, query, where, getDocs} = window.fb;
+    const snap = await getDocs(query(collection(window.fbDb,'profiles'), where('banned','==',true)));
+    const rows = snap.docs.map(d=>d.data());
+    document.getElementById('bannedList').innerHTML = rows.map(u=>`
+      <div class="sub-card"><div class="sub-title">${u.display_name||u.username||u.email}</div><div class="sub-meta">${u.email||''}</div>
+      <div class="sub-actions"><button class="sub-btn approve" onclick="document.getElementById('banEmailInput').value='${u.email||''}'; unbanUserByEmail();">رفع الإيقاف</button></div></div>
+    `).join('') || `<div class="empty-state" style="padding:16px;">${svgIcon('sparkle')}<div class="txt">ماكو أعضاء موقوفين</div></div>`;
+  }catch(e){ console.error(e); }
+}
+/* ===== إدارة الإداريين (مستوى ٣ فقط) ===== */
+async function addAdminByEmail(){
+  if(getAdminLevel() < 3){ alert('يحتاج صلاحية مدير عام'); return; }
+  const email = document.getElementById('newAdminEmail').value.trim();
+  const level = +document.getElementById('newAdminLevel').value;
+  const msg = document.getElementById('addAdminMsg');
+  if(!email){ msg.className='auth-msg err'; msg.textContent='اكتب البريد'; return; }
+  if(email===ADMIN_EMAIL){ msg.className='auth-msg err'; msg.textContent='هذا البريد هو المالك أصلاً'; return; }
+  try{
+    await window.fb.setDoc(window.fb.doc(window.fbDb,'admins',email), {email, level, addedBy:currentUser.email, addedAt:window.fb.serverTimestamp()});
+    msg.className='auth-msg ok'; msg.textContent='تمت الإضافة';
+    document.getElementById('newAdminEmail').value='';
+    loadAdminRoles(); loadAdminsList();
+  }catch(e){ msg.className='auth-msg err'; msg.textContent='تعذر الإضافة'; console.error(e); }
+}
+async function removeAdmin(email){
+  if(getAdminLevel() < 3){ alert('يحتاج صلاحية مدير عام'); return; }
+  if(email===ADMIN_EMAIL){ alert('ما تكدر تحذف المالك'); return; }
+  if(!confirm(`إزالة صلاحيات ${email}؟`)) return;
+  try{ await window.fb.deleteDoc(window.fb.doc(window.fbDb,'admins',email)); loadAdminRoles(); loadAdminsList(); }
+  catch(e){ alert('تعذر الحذف: '+e.message); }
+}
+async function changeAdminLevel(email, level){
+  if(getAdminLevel() < 3) return;
+  try{ await window.fb.setDoc(window.fb.doc(window.fbDb,'admins',email), {level:+level}, {merge:true}); loadAdminRoles(); }
+  catch(e){ alert('تعذر تعديل الصلاحية: '+e.message); }
+}
+/* ===== سجل الدخول: منو سجل دخول ومتى (طلب هذي الرسالة) ===== */
+async function loadLoginLogs(){
+  if(getAdminLevel() < 3) return;
+  const box = document.getElementById('loginLogsList');
+  box.innerHTML = '<div class="chat-skel"></div><div class="chat-skel"></div>';
+  try{
+    const {collection, query, orderBy, limit, getDocs} = window.fb;
+    const snap = await getDocs(query(collection(window.fbDb,'login_logs'), orderBy('loginAt','desc'), limit(50)));
+    const rows = snap.docs.map(d=>d.data());
+    box.innerHTML = rows.length ? rows.map(r=>{
+      const when = r.loginAt && r.loginAt.toDate ? r.loginAt.toDate().toLocaleString('ar-EG') : '—';
+      return `<div class="sub-card"><div class="sub-title">${r.email||'—'}</div><div class="sub-meta">${when}${r.device?(' · '+r.device.slice(0,50)):''}</div></div>`;
+    }).join('') : `<div class="empty-state" style="padding:16px;">${svgIcon('sparkle')}<div class="txt">ماكو تسجيلات دخول بعد</div></div>`;
+  }catch(e){ console.error(e); box.innerHTML = `<div class="empty-state" style="padding:16px;"><div class="txt">تعذر تحميل السجل</div></div>`; }
+}
+/* ===== حذف عمل كامل (عمل + كل فصوله + كل تعليقاته) — طلب هذي الرسالة ===== */
+async function loadDeleteContentList(){
+  if(getAdminLevel() < 2) return;
+  const box = document.getElementById('deleteContentList');
+  const keys = Object.keys(ANIME);
+  box.innerHTML = keys.length ? keys.map(k=>`
+    <div class="sub-card"><div class="sub-title">${ANIME[k].title}</div><div class="sub-meta">معرّف: ${k}</div>
+    <div class="sub-actions"><button class="sub-btn reject" onclick="cascadeDeleteManga('${k}')">حذف العمل كامل + فصوله + تعليقاته</button></div></div>
+  `).join('') : `<div class="empty-state" style="padding:16px;">${svgIcon('sparkle')}<div class="txt">ماكو أعمال حاليًا</div></div>`;
+}
+async function cascadeDeleteManga(key){
+  const title = ANIME[key] ? ANIME[key].title : key;
+  if(!confirm(`متأكد تريد تحذف "${title}" نهائيًا مع كل فصوله وتعليقاته؟ هذا الإجراء لا يُرجّع.`)) return;
+  try{
+    const {collection, query, where, getDocs, deleteDoc, doc} = window.fb;
+    const chSnap = await getDocs(collection(window.fbDb,'mangas',key,'chapters'));
+    for(const d of chSnap.docs) await deleteDoc(doc(window.fbDb,'mangas',key,'chapters',d.id));
+    const cSnap = await getDocs(query(collection(window.fbDb,'comments'), where('mangaId','==',key)));
+    for(const d of cSnap.docs) await deleteDoc(doc(window.fbDb,'comments',d.id));
+    await deleteDoc(doc(window.fbDb,'mangas',key));
+    delete ANIME[key];
+    alert('تم حذف العمل وكل فصوله وتعليقاته');
+    loadDeleteContentList();
+    renderRows();
+  }catch(e){ alert('تعذر الحذف الكامل: '+e.message); }
+}
+function loadAdminsList(){
+  const box = document.getElementById('adminsList'); if(!box) return;
+  const emails = Object.keys(adminRoles);
+  let html = `<div class="sub-card"><div class="sub-title">${ADMIN_EMAIL}</div><div class="sub-meta">مدير عام · المالك (ثابت)</div></div>`;
+  html += emails.map(email=>`
+    <div class="sub-card"><div class="sub-title">${email}</div>
+    <div class="sub-meta">
+      <select class="form-input" style="width:auto; display:inline-block; padding:4px 8px; font-size:10.5px;" onchange="changeAdminLevel('${email}', this.value)">
+        <option value="1" ${adminRoles[email]===1?'selected':''}>مشرف</option>
+        <option value="2" ${adminRoles[email]===2?'selected':''}>محرر محتوى</option>
+        <option value="3" ${adminRoles[email]===3?'selected':''}>مدير عام</option>
+      </select>
+    </div>
+    <div class="sub-actions"><button class="sub-btn reject" onclick="removeAdmin('${email}')">إزالة الصلاحية</button></div></div>
+  `).join('');
+  box.innerHTML = html;
+}
+/* ===== أدوات الموقع ===== */
+function fillSiteSettingsForm(){
+  document.getElementById('setMaintenance').checked = !!SITE_SETTINGS.maintenanceMode;
+  document.getElementById('setBlockGuest').checked = !!SITE_SETTINGS.blockGuestComments;
+  document.getElementById('setCommentsLocked').checked = !!SITE_SETTINGS.commentsLocked;
+  document.getElementById('setRegDisabled').checked = !!SITE_SETTINGS.newRegistrationsDisabled;
+  document.getElementById('setAutoApprove').checked = !!SITE_SETTINGS.autoApproveSubmissions;
+  (SITE_SETTINGS.siteLinks||[]).forEach((v,i)=>{ const el=document.getElementById('siteLink'+i); if(el) el.value=v||''; });
+}
+function exportCatalogJson(){
+  const blob = new Blob([JSON.stringify(ANIME, null, 2)], {type:'application/json'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'pure-catalog.json'; a.click();
+}
+function exportSettingsBackup(){
+  const backup = { settings: SITE_SETTINGS, admins: adminRoles, exportedAt: new Date().toISOString() };
+  const blob = new Blob([JSON.stringify(backup, null, 2)], {type:'application/json'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'pure-settings-backup.json'; a.click();
+}
+/* ===== مترجم نص يدوي (إنجليزي → عربي) — الأدمن يلصق نص عنده حقوقه ويترجمه بنفسه، بدون أي سحب أو تحرير آلي للصور ===== */
+/* ===== مترجم عام: يستخدمه المترجم اليدوي بلوحة الإدارة وزر تبديل لغة القراءة ===== */
+async function gtranslate(text, target){
+  if(!text || !text.trim()) return text;
+  try{
+    const res = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${target}&dt=t&q=${encodeURIComponent(text)}`);
+    const data = await res.json();
+    return data[0].map(chunk=>chunk[0]).join('');
+  }catch(e){ console.error('تعذر الترجمة:', e); return text; }
+}
+async function runTranslate(){
+  const src = document.getElementById('translateSrc').value.trim();
+  const out = document.getElementById('translateOut');
+  if(!src){ out.value=''; return; }
+  out.value = '...جاري الترجمة';
+  out.value = await gtranslate(src, 'ar');
+}
+function copyTranslateOut(){
+  const out = document.getElementById('translateOut');
+  out.select(); document.execCommand('copy');
+}
+/* ===== لوحة رفع تيم بيور: نشر مباشر لعمل/فصل يرفعه العضو بنفسه — بدون أي سحب أو معالجة آلية للصور ===== */
+async function translateUploadDesc(){
+  const en = document.getElementById('upDescEn').value.trim();
+  if(!en) return;
+  document.getElementById('upDescAr').value = await gtranslate(en, 'ar');
+}
+async function translateUploadChapter(){
+  const en = document.getElementById('upChTextEn').value.trim();
+  if(!en) return;
+  document.getElementById('upChTextAr').value = await gtranslate(en, 'ar');
+}
+async function publishManga(){
+  const msg = document.getElementById('upMangaMsg');
+  if(!isPureTeam()){ msg.className='auth-msg err'; msg.textContent='هذا القسم لتيم بيور فقط'; return; }
+  const key = document.getElementById('upKey').value.trim();
+  const title = document.getElementById('upTitle').value.trim();
+  if(!key || !title){ msg.className='auth-msg err'; msg.textContent='عبّي المعرّف والعنوان على الأقل'; return; }
+  try{
+    await window.fb.setDoc(window.fb.doc(window.fbDb,'mangas',key), {
+      title, type: document.getElementById('upType').value, genre: document.getElementById('upGenre').value.trim(),
+      description: document.getElementById('upDescAr').value.trim() || document.getElementById('upDescEn').value.trim(),
+      uploadedBy: currentUser.email, updatedAt: window.fb.serverTimestamp()
+    }, {merge:true});
+    msg.className='auth-msg ok'; msg.textContent='تم حفظ بيانات العمل';
+    document.getElementById('upChKey').value = key;
+    loadMangasFromFirestore();
+  }catch(e){ msg.className='auth-msg err'; msg.textContent='تعذر الحفظ: '+e.message; }
+}
+async function publishChapter(){
+  const msg = document.getElementById('upChMsg');
+  if(!isPureTeam()){ msg.className='auth-msg err'; msg.textContent='هذا القسم لتيم بيور فقط'; return; }
+  const key = document.getElementById('upChKey').value.trim();
+  const n = +document.getElementById('upChNum').value;
+  if(!key || !n){ msg.className='auth-msg err'; msg.textContent='عبّي معرّف العمل ورقم الفصل'; return; }
+  const pages = document.getElementById('upChPages').value.split('\n').map(s=>s.trim()).filter(Boolean);
+  const textAr = document.getElementById('upChTextAr').value.trim() || document.getElementById('upChTextEn').value.trim();
+  try{
+    await window.fb.setDoc(window.fb.doc(window.fbDb,'mangas',key,'chapters',String(n)), {
+      number:n, text: textAr || null, pages: pages.length?pages:null, uploadedBy: currentUser.email, createdAt: window.fb.serverTimestamp()
+    });
+    msg.className='auth-msg ok'; msg.textContent='تم نشر الفصل';
+    document.getElementById('upChNum').value=''; document.getElementById('upChTextEn').value=''; document.getElementById('upChTextAr').value=''; document.getElementById('upChPages').value='';
+    loadMangasFromFirestore();
+  }catch(e){ msg.className='auth-msg err'; msg.textContent='تعذر النشر: '+e.message; }
+}
+
+/* wire tabs that need data loading */
+document.addEventListener('click', e=>{
+  const t = e.target.closest('.acc-tab');
+  if(t && t.dataset.t==='team') loadTeamPanel();
+});
+</script>
+</body>
+</html>
